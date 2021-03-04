@@ -1,12 +1,12 @@
 const express = require('express');
 const app = express();
-
+//test
 const mongoose = require('mongoose');
 
 const connection = mongoose.connect('mongodb://localhost:27017/slack_clone');
 const db = mongoose.connection;
 
-const port = 3000;
+const port = 4000;
 
 // middleware
 app.use(express.urlencoded({extended: true}));
