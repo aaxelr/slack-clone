@@ -4,8 +4,13 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const expressEjsLayout = require('express-ejs-layouts');
-const { render } = require('ejs');
+const bcrypt = require('bcrypt')
 const port = 4000;
+const flash = require('connect-flash')
+const session = require('express-session');
+const passport = require('passport');
+require('./config/passport')(passport)
+
 
 // Static
 app.use('/public', express.static(path.join(__dirname, 'public')))
@@ -23,6 +28,26 @@ app.use(expressEjsLayout)
 // Body Parser
 app.use(express.urlencoded({extended: false}));
 
+//Express session
+app.use(session({
+  secret: 'secret', 
+  resave: true, 
+  saveUninitialized: true
+}));
+
+app.use(passport.initialize()); 
+app.use(passport.session()); 
+
+
+//use flash
+app.use(flash()); 
+app.use((req, res, next)=>{
+  res.locals.success_msg = req.flash('success_msg')
+  res.locals.error_msg = req.flash('error_msg')
+  res.locals.error = req.flash('error'); 
+next(); 
+})
+
 //////////////////// ROUTES ////////////////////
 
 // landing page
@@ -32,8 +57,8 @@ app.get('/', (req, res) => {
 
 
 // home page
-app.get('/home', (req, res) => {
-  res.render('home');
+app.get('/dashboard', (req, res) => {
+  res.render('dashboard');
 });
 
 
@@ -42,8 +67,12 @@ app.get('/users/login', (req, res) => {
   res.render('login');
 });
 
-app.post('/users/login', (req, res) => {
-  // do stuff
+app.post('/users/login', (req, res, next) => {
+  passport.authenticate('local', {
+    successRedirect: '/dashboard',
+    failureRedirect: '/users/login',
+    failureFlash: true,
+  }) (req, res, next)
 });
 
 
@@ -90,12 +119,33 @@ app.post('/users/register', (req, res) => {
         email : email,
         password : password
       })
+
       } else {
         const newUser = new User({
-          name: name,
-          email: email,
+/*           name: name, 
+ */          email: email,
           password: password
         })
+        //Hash password
+        bcrypt.genSalt(10, (err, salt)=>{
+          return bcrypt.hash(newUser.password, salt,
+            (err, hash)=>{
+              if(err) throw err; 
+                //Save pass to hash
+                newUser.password = hash; 
+                //Save user
+                newUser
+                .save()
+                .then((value) =>{
+                  console.log(value)
+                  req.flash('success_msg', 'You have now registered')
+                  res.redirect('/users/login')
+                })
+                .catch(value => console.log(value))
+            }
+            )
+        })
+
       }
     })
   }
