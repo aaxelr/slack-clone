@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
-  user_name: {
+  name: {
     type: String,
     required: true,
     minlength: 1,
@@ -19,6 +19,10 @@ const UserSchema = new Schema({
   is_online: {
     type: Boolean,
     default: false
+  },
+  date: {
+    type: Date,
+    default: Date.now
   }
 });
 

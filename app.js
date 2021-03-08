@@ -1,81 +1,109 @@
+const path = require('path')
 const express = require('express');
+// const router = express.Router()
 const app = express();
-//test
 const mongoose = require('mongoose');
-
-const connection = mongoose.connect('mongodb://localhost:27017/slack_clone');
-const db = mongoose.connection;
-
+const expressEjsLayout = require('express-ejs-layouts');
+const { render } = require('ejs');
 const port = 4000;
 
-// middleware
-app.use(express.urlencoded({extended: true}));
+// Static
+app.use('/public', express.static(path.join(__dirname, 'public')))
 
+// Mongoose
+mongoose.connect('mongodb://localhost:27017/slack_clone',{useNewUrlParser: true, useUnifiedTopology : true})
+.then(() => console.log('connected,,'))
+.catch((err)=> console.log(err));
+
+// EJS
+
+app.set('view engine', 'ejs')
+app.use(expressEjsLayout)
+
+// Body Parser
+app.use(express.urlencoded({extended: false}));
+
+//////////////////// ROUTES ////////////////////
 
 // landing page
 app.get('/', (req, res) => {
-  res.render('index.ejs');
+  res.render('welcome');
 });
 
 
 // home page
 app.get('/home', (req, res) => {
-  res.render('home.ejs');
+  res.render('home');
 });
 
 
 // sign in
-app.get('/user/signin', (req, res) => {
-  res.render('signIn.ejs');
+app.get('/users/login', (req, res) => {
+  res.render('login');
 });
 
-app.post('/user/signin', (req, res) => {
-  const UserModel = require('./models/user');
-
-  UserModel
-    .findOne({ email: req.body.emailInput, password: req.body.passwordInput })
-    .exec((error, user) => {
-      if (error) {
-        return handleError(error);
-      }
-      if (!user) {
-        console.log('email and/or password is incorrect.');
-        res.redirect('signin')
-      } else {
-        console.log(`welcome, ${user.user_name}`);
-        res.redirect('../home');
-      }
-    });
+app.post('/users/login', (req, res) => {
+  // do stuff
 });
 
 
 // sign up 
-app.get('/user/new', (req, res) => {
-  res.render('signUp.ejs')
+app.get('/users/register', (req, res) => {
+
+  res.render('register')
 });
 
-app.post('/user/new', (req, res) => {
-  const UserModel = require('./models/user');
+app.post('/users/register', (req, res) => {
+  const User = require('./models/user')
 
-  const user = new UserModel(
-    {
-      user_name: req.body.userNameInput,
-      email: req.body.emailInput,
-      password: req.body.passwordInput,
-      is_online: false
-    });
+  const {name, email, password} = req.body
+  const errors = []
 
-  user.save((err) => {
-    if (err) {
-      return console.log(err);
-    }
-    console.log('new user created');
-    res.redirect('/home');
-  });
+  if(!name || !email || !password) {
+    errors.push({msg: 'Please fill in all fields'})
+  }
+
+  if(password.length < 6) {
+    errors.push({msg: 'password must be longer then 6 characters'})
+  }
+
+  if(errors.length > 0) {
+    res.render('register', {
+      errors: errors,
+      name : name,
+      email : email,
+      password : password
+    })
+  } else {
+    // validation passed
+    User
+    .findOne({email: email})
+    .exec((err, user) => {
+      console.log(user);
+      if(user) {
+        errors.push({msg: 'email already exists!'})
+        console.log(errors)
+        // va hände här, knas i tutorial?
+        res.render('register', {
+        errors: errors,
+        name : name,
+        email : email,
+        password : password
+      })
+      } else {
+        const newUser = new User({
+          name: name,
+          email: email,
+          password: password
+        })
+      }
+    })
+  }
+
 });
 
 
-app.get('/user/signout', (req, res) => {
+app.get('/users/signout', (req, res) => {
   console.log('---### byyyye ###---');
   res.redirect('/');
 });
