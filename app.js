@@ -1,15 +1,16 @@
-const path = require('path')
+const path = require('path');
 const express = require('express');
 // const router = express.Router()
 const app = express();
 const mongoose = require('mongoose');
 const expressEjsLayout = require('express-ejs-layouts');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
 const port = 4000;
 const flash = require('connect-flash')
 const session = require('express-session');
 const passport = require('passport');
-require('./config/passport')(passport)
+require('./config/passport')(passport);
+const { ensureAuthenticated } = require('./config/auth.js');
 
 
 // Static
@@ -22,8 +23,8 @@ mongoose.connect('mongodb://localhost:27017/slack_clone',{useNewUrlParser: true,
 
 // EJS
 
-app.set('view engine', 'ejs')
-app.use(expressEjsLayout)
+app.set('view engine', 'ejs');
+app.use(expressEjsLayout);
 
 // Body Parser
 app.use(express.urlencoded({extended: false}));
@@ -46,7 +47,7 @@ app.use((req, res, next)=>{
   res.locals.error_msg = req.flash('error_msg')
   res.locals.error = req.flash('error'); 
 next(); 
-})
+});
 
 //////////////////// ROUTES ////////////////////
 
@@ -56,9 +57,10 @@ app.get('/', (req, res) => {
 });
 
 
-// home page
-app.get('/dashboard', (req, res) => {
-  res.render('dashboard');
+// dashboard page
+app.get('/dashboard', ensureAuthenticated, (req, res) => {
+  console.log(req);
+  res.render('dashboard', { user: req.user });
 });
 
 
@@ -79,21 +81,21 @@ app.post('/users/login', (req, res, next) => {
 // sign up 
 app.get('/users/register', (req, res) => {
 
-  res.render('register')
+  res.render('register');
 });
 
 app.post('/users/register', (req, res) => {
-  const User = require('./models/user')
+  const User = require('./models/user');
 
-  const {name, email, password} = req.body
-  const errors = []
+  const {name, email, password} = req.body;
+  const errors = [];
 
   if(!name || !email || !password) {
-    errors.push({msg: 'Please fill in all fields'})
+    errors.push({msg: 'Please fill in all fields'});
   }
 
   if(password.length < 6) {
-    errors.push({msg: 'password must be longer then 6 characters'})
+    errors.push({msg: 'password must be longer then 6 characters'});
   }
 
   if(errors.length > 0) {
@@ -102,7 +104,7 @@ app.post('/users/register', (req, res) => {
       name : name,
       email : email,
       password : password
-    })
+    });;
   } else {
     // validation passed
     User
@@ -110,22 +112,22 @@ app.post('/users/register', (req, res) => {
     .exec((err, user) => {
       console.log(user);
       if(user) {
-        errors.push({msg: 'email already exists!'})
-        console.log(errors)
+        errors.push({msg: 'email already exists!'});
+        console.log(errors);
         // va hände här, knas i tutorial?
         res.render('register', {
         errors: errors,
         name : name,
         email : email,
         password : password
-      })
+      });
 
       } else {
         const newUser = new User({
-/*           name: name, 
- */          email: email,
+          name: name, 
+          email: email,
           password: password
-        })
+        });
         //Hash password
         bcrypt.genSalt(10, (err, salt)=>{
           return bcrypt.hash(newUser.password, salt,
@@ -137,25 +139,26 @@ app.post('/users/register', (req, res) => {
                 newUser
                 .save()
                 .then((value) =>{
-                  console.log(value)
-                  req.flash('success_msg', 'You have now registered')
-                  res.redirect('/users/login')
+                  console.log(value);
+                  req.flash('success_msg', 'You have now registered');
+                  res.redirect('/users/login');
                 })
-                .catch(value => console.log(value))
+                .catch(value => console.log(value));
             }
-            )
-        })
+            );
+        });
 
       }
-    })
+    });
   }
 
 });
 
-
-app.get('/users/signout', (req, res) => {
-  console.log('---### byyyye ###---');
-  res.redirect('/');
+// logout
+app.get('/users/logout', (req, res) => {
+  req.logout();
+  req.flash('success_msg', 'Now logged out');
+  res.redirect('/users/login');
 });
 
 // server
