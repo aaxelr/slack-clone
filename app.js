@@ -13,7 +13,7 @@ require('./config/passport')(passport)
 
 
 // Static
-app.use('/public', express.static(path.join(__dirname, 'public')))
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Mongoose
 mongoose.connect('mongodb://localhost:27017/slack_clone',{useNewUrlParser: true, useUnifiedTopology : true})
