@@ -8,6 +8,12 @@ const session = require('express-session');
 const passport = require('passport');
 require('./config/passport')(passport);
 const { ensureAuthenticated } = require('./config/auth.js');
+const port = 4000;
+
+const http = require('http').Server(app);
+
+
+const io = require('socket.io')(http);
 
 const userRouter = require('./routes/userRoutes');
 const channelRoutes = require('./routes/channelRoutes');
@@ -59,17 +65,21 @@ const renderLandingPage = (req, res) => {
   res.render('welcome');
 }
 
-const renderDashboard = (req, res) => {
-  console.log(req.user._id)
-  
+const renderDashboard = (req, res) => {  
 
+  // Lift in IO to channelRoute
+  
   const channels = require('./models/channel');
   channels.find({
     users: req.user._id
   })
 
   .exec((err, channels) => {
+    io.on('connection', (socket) => {
+      console.log(`welcome ${req.user.name}!`);
+    });
     res.render('dashboard', { 
+
       user: req.user, 
       channels: channels    
       });
@@ -106,5 +116,13 @@ app.use('/users', userRouter);
 // CHATROUTER
 // app.use('/chat', chatRouter);
 
+/* io.on('connection', (socket) => {
+  console.log('a user connected');
+}); */
+ 
+http.listen(port, () => {
+  console.log(`listening on port ${port}...`);
+});
 
-module.exports = app;
+
+/* module.exports = app; */

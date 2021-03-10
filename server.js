@@ -1,6 +1,8 @@
 const app = require('./app');
 const port = 4000;
 
-app.listen(port, () => {
+const http = require('http').Server(app);
+
+http.listen(port, () => {
   console.log(`listening on port ${port}...`);
 });
