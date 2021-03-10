@@ -10,6 +10,7 @@ require('./config/passport')(passport);
 const { ensureAuthenticated } = require('./config/auth.js');
 
 const userRouter = require('./routes/userRoutes');
+const channelRoutes = require('./routes/channelRoutes');
 
 
 //////////////////// MIDDLEWARE ////////////////////
@@ -59,7 +60,22 @@ const renderLandingPage = (req, res) => {
 }
 
 const renderDashboard = (req, res) => {
-  res.render('dashboard', { user: req.user });
+  console.log(req.user._id)
+  
+
+  const channels = require('./models/channel');
+  channels.find({
+    users: req.user._id
+  })
+
+  .exec((err, channels) => {
+    res.render('dashboard', { 
+      user: req.user, 
+      channels: channels    
+      });
+    });
+
+  
 }
 
 
@@ -76,6 +92,7 @@ app
   .get(ensureAuthenticated, renderDashboard);
 
 
+
 //////////////////// MOUNTS ////////////////////
 
 // USERROUTER
@@ -83,7 +100,7 @@ app.use('/users', userRouter);
   
   
 // CHANNELROUTER
-// app.use('/channel', channelRouter);
+ app.use('/channels', channelRoutes);
 
 
 // CHATROUTER

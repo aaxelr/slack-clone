@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const ChannelMessageSchema = new Schema({
+const ChannelPostSchema = new Schema({
     time_stamp: {
         type: Date,
         default: Date.now()
@@ -21,4 +21,4 @@ const ChannelMessageSchema = new Schema({
     }]
 });
 
-module.exports = mongoose.model('ChannelMessage', ChannelMessageSchema);
+module.exports = mongoose.model('ChannelPost', ChannelPostSchema);
