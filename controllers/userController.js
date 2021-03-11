@@ -19,7 +19,7 @@ exports.renderRegisterPage = (req, res) => {
 }
 
 exports.registerUser = (req, res) => {
-  const User = require('./models/user');
+  const User = require('../models/user');
 
   const { name, email, password } = req.body;
   const errors = [];

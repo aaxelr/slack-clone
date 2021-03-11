@@ -12,7 +12,6 @@ const port = 4000;
 
 const http = require('http').Server(app);
 
-
 const io = require('socket.io')(http);
 
 const userRouter = require('./routes/userRoutes');
@@ -68,24 +67,34 @@ const renderLandingPage = (req, res) => {
 const renderDashboard = (req, res) => {  
 
   // Lift in IO to channelRoute
-  
+  io.on('connection', (socket) => {
+  socket.on('chat message', (msg) => {
+    const msg_info = {
+      msg: msg,
+      user: req.user,
+      date: new Date()
+    }
+    io.emit('chat message', msg_info)
+    console.log(msg)
+  })
+  console.log('user connected!');
+  socket.on('disconnect', () => {
+    console.log('user disconnected')
+  })
+});
   const channels = require('./models/channel');
   channels.find({
     users: req.user._id
   })
 
   .exec((err, channels) => {
-    io.on('connection', (socket) => {
-      console.log(`welcome ${req.user.name}!`);
-    });
+
     res.render('dashboard', { 
 
       user: req.user, 
       channels: channels    
       });
     });
-
-  
 }
 
 
@@ -120,6 +129,10 @@ app.use('/users', userRouter);
   console.log('a user connected');
 }); */
  
+
+
+
+
 http.listen(port, () => {
   console.log(`listening on port ${port}...`);
 });
