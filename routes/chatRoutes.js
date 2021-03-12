@@ -1,9 +1,5 @@
 const express = require('express')
-// const app = express()
 const router = express.Router() 
-/* const http = require('http').Server(app);
-const io = require('socket.io')(http); */
-
 
 const renderChatInvite = (req, res) => {
     res.render('chatInvite')
@@ -15,11 +11,8 @@ const createChat = (req, res) => {
     // vårt id
     // invited users id
     // chatroom id
-    res.redirect(`/chats/${ChatRoomId}`)
-    
-    email = req.body.chatInviteInput
-    console.log(email)
-    res.redirect('')
+    const chatRoomId = 123
+    res.redirect(`/chats/${chatRoomId}`)
 }
 
 const renderChatRoom = (req, res) => {
@@ -34,6 +27,5 @@ router
 router
     .route('/:id')
     .get(renderChatRoom)
-    
-    
+
 module.exports = router;
