@@ -14,8 +14,9 @@ const http = require('http').Server(app);
 
 const io = require('socket.io')(http);
 
-const userRouter = require('./routes/userRoutes');
+const userRoutes = require('./routes/userRoutes');
 const channelRoutes = require('./routes/channelRoutes');
+const chatRoutes = require('./routes/chatRoutes');
 
 
 //////////////////// MIDDLEWARE ////////////////////
@@ -88,9 +89,8 @@ const renderDashboard = (req, res) => {
   })
 
   .exec((err, channels) => {
-
+    console.log(req.user)
     res.render('dashboard', { 
-
       user: req.user, 
       channels: channels    
       });
@@ -114,8 +114,8 @@ app
 
 //////////////////// MOUNTS ////////////////////
 
-// USERROUTER
-app.use('/users', userRouter);
+// USERROUTEs
+app.use('/users', userRoutes);
   
   
 // CHANNELROUTER
@@ -123,7 +123,7 @@ app.use('/users', userRouter);
 
 
 // CHATROUTER
-// app.use('/chat', chatRouter);
+app.use('/chats', chatRoutes);
 
 /* io.on('connection', (socket) => {
   console.log('a user connected');

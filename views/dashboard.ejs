@@ -1,15 +1,24 @@
-<p>Welcome <%= user.name %></p>
+<div class="d-flex  vh-100">
 
-<div class="container">
-    <% channels.forEach(channel => { %>
-        <div class="card" style="width: 18rem;">
-            <img src="..." class="card-img-top" alt="...">
-            <div class="card-body">
-              <h5 class="card-title"><%=channel.channel_name%></h5>
-              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-              <a href="/channels/<%= channel._id %>" class="btn btn-primary">go to channel</a>
+
+  <%- include('./components/sidebar') %>
+
+  <div class="section">
+  <p>Welcome <%= user.name %></p>
+
+  <div class="container">
+      <% channels.forEach(channel => { %>
+          <div class="card" style="width: 18rem;">
+              <!-- <img src="..." class="card-img-top" alt="..."> -->
+              <div class="card-body">
+                <h5 class="card-title"><%=channel.channel_name%></h5>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                <a href="/channels/<%= channel._id %>" class="btn btn-primary">go to channel</a>
+              </div>
             </div>
-          </div>
-    <%});%>
+      <%});%>
+  </div>
+  <a href='/users/logout'>Logout</a>
+
+  </div>
 </div>
-<a href='/users/logout'>Logout</a>
