@@ -1,13 +1,31 @@
 <ul class="nav flex-column bg-dark text-white">
-    <li>
-        <h5>My chats</h5>
+    <li class="nav-item">
+        <p class="nav-link">Online</p>
     </li>
 
     <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="#">Active</a>
+        <p class="nav-link">My chats</p>
+    </li>
+
+    <li>
+        <ul>
+            <% user.chat_rooms.forEach(chatRoom => { %>
+            <li class="nav-item">
+                <a 
+                class="nav-link btn btn-primary" 
+                href="/chats/<%= chatRoom._id %>" 
+                tabindex="-1" 
+                aria-disabled="true"
+                >
+                    <%= chatRoom._id %>
+                </a>
+            </li>
+            <% }); %>
+        </ul>
     </li>
 
     <li class="nav-item">
         <a class="nav-link btn btn-primary" href="/chats" tabindex="-1" aria-disabled="true">New chat</a>
     </li>
+
 </ul>

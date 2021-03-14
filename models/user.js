@@ -16,6 +16,14 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
+  chat_rooms: [{
+    type: Schema.Types.ObjectId,
+    ref: 'ChatRoom'
+  }],
+  channels: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Channel'
+  }],
   is_online: {
     type: Boolean,
     default: false
