@@ -47,8 +47,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 } */
 
-#channelForm,
-#chatForm {
+.formTemplate {
   background: rgba(0, 0, 0, 0.15);
   padding: 0.25rem;
   position: fixed;
@@ -61,7 +60,7 @@ body {
   backdrop-filter: blur(10px);
 }
 
-#chatInviteForm {
+.formTopTemplate {
   background: rgba(0, 0, 0, 0.15);
   padding: 0.25rem;
   position: fixed;
@@ -74,9 +73,7 @@ body {
   backdrop-filter: blur(10px);
 }
 
-#channelInput, 
-#chatInput,
-#chatInviteInput{
+.inputTemplate{
   border: none;
   padding: 0 1rem;
   flex-grow: 1;
@@ -84,15 +81,12 @@ body {
   margin: 0.25rem;
 }
 
-#channelInput:focus,
-#chatInput:focus, 
-#chatInviteInput:focus{
+.inputTemplate:focus{
   outline: none;
 }
 
-#channelForm>button,
-#chatForm>button,
-#chatInviteForm>button {
+.formTemplate>button,
+.formTopTemplate>button {
   background: #333;
   border: none;
   padding: 0 1rem;
@@ -102,20 +96,17 @@ body {
   color: #fff;
 }
 
-#channelMessages,
-#chatMessages{
+.messagesTemplate{
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
 
-#channelMessages>li,
-#chatMessages>li {
+.messagesTemplate>li {
   padding: 0.5rem 1rem;
 }
 
-#channelMessages>li:nth-child(odd),
-#chatMessages>li:nth-child(odd) {
+.messagesTemplate>li:nth-child(odd) {
   background: #efefef;
 }
 
