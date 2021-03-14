@@ -8,11 +8,11 @@
     </li>
 
     <li>
-        <ul>
+        <ul class="nav">
             <% user.chat_rooms.forEach(chatRoom => { %>
             <li class="nav-item">
                 <a 
-                class="nav-link btn btn-primary" 
+                class="nav-link" 
                 href="/chats/<%= chatRoom._id %>" 
                 tabindex="-1" 
                 aria-disabled="true"

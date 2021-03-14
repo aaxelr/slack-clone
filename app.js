@@ -98,7 +98,7 @@ const renderDashboard = (req, res) => {
       console.log(user, '@ line 98')
       res.render('dashboard', {
         user,
-        channels: [1,2]
+        channels: [1,2,3,4]
       });
     });
 }

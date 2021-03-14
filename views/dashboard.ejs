@@ -1,14 +1,15 @@
-<div class="d-flex  vh-100">
+<%- include('components/header') %>
 
+<div class="d-flex  vh-100">
 
   <%- include('./components/sidebar') %>
 
   <div class="section">
   <p>Welcome <%= user.name %></p>
 
-  <div class="container">
-      <% channels.forEach(channel => { %>
-          <div class="card" style="width: 18rem;">
+  <div class="container row">
+      <% user.channels.forEach(channel => { %>
+          <div class="card col-4">
               <!-- <img src="..." class="card-img-top" alt="..."> -->
               <div class="card-body">
                 <h5 class="card-title"><%=channel.channel_name%></h5>
@@ -18,7 +19,8 @@
             </div>
       <% }); %>
   </div>
-  <a href='/users/logout'>Logout</a>
+  <a class="btn btn-primary" href='/channels'>New channel</a>
+ 
 
   </div>
 </div>
