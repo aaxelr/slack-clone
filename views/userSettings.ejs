@@ -1,21 +1,22 @@
 <%- include('./components/header')%>
 
-<div class=" mt-5 mx-auto text-center container row marketing text-secondary border border-1 shadow" >
-    <div class=" p-5">
-        <svg class="bd-placeholder-img rounded-circle" 
-            width="140" height="140" xmlns="http://www.w3.org/2000/svg" 
-            role="img" aria-label="Placeholder: 140x140"
-            preserveAspectRatio="xMidYMid slice" 
-            focusable="false">
-            <title>Placeholder</title>
-            <rect width="100%" height="100%" fill="#777"/>
-            <text x="50%" y="50%" fill="#777" dy=".3em">140x140</text>
-        </svg>        
-    <h2>Heading</h2>
-        <p>Some representative placeholder content for the three columns of text below the carousel. This is the first column.</p>
+<div class=" mt-5 mx-auto text-center container row marketing text-secondary border border-1 shadow">
+    <div class="p-5">
+
+        <div class="mx-auto">
+            <% if (!user.profile_pic) { %>
+                <img class="img-fluid img-thumbnail w-50" src="/../public/uploads/1615906330476.jpg">
+            <% } else { %>
+                <img class="img-fluid img-thumbnail w-50" src="/../<%= profile_pic %>">
+           <% } %>
+        </div>
+
+        <h3><%= user.name %></h3>
+        <h4><%= user.email %></h4>
+
         <form action="/users/settings/picture" method="post" enctype="multipart/form-data">
             <input type="file" name="picture" /><br />
             <input type="submit" value="Save" class="btn btn-secondary" />
-          </form>
+        </form>
     </div>
 </div>

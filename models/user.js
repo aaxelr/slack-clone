@@ -24,9 +24,12 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Channel'
   }],
-  is_online: {
+  is_online: { // är det här verkligen db's jobb??? 
     type: Boolean,
     default: false
+  },
+  profile_pic: {
+    type: String
   },
   date: {
     type: Date,

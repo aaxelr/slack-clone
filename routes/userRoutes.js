@@ -4,9 +4,9 @@ const flash = require('connect-flash');
 const router = express.Router();
 
 const userController = require('./../controllers/userController');
-const multer = require('multer')
-const path = require('path')
-const uploadPath = 'public/uploads/'
+const multer = require('multer');
+const path = require('path');
+const uploadPath = 'public/uploads/';
 const storage = multer.diskStorage({
 
   //lägg till error handler 
@@ -75,26 +75,40 @@ router
 
 router
   .route('/settings/picture')
-  .post( upload.single('picture'), (req, res)=>{
+  .post(upload.single('picture'), (req, res) => {
 
-    try{
+    try {
       const profile_pic = uploadPath + req.file.filename
   
-      if(profile_pic){
-        res.render('image', {image: profile_pic})
-        console.log(profile_pic)
+      if (profile_pic === uploadPath || !profile_pic) {
+        res.end('<h1>File not uploaded</h1>');
       }
-      else{
-        res.end('<h1>File not uploadaed</h1>')
+      else {
+        //db thangs?
+        const id = req.user._id;
+        const User = require('../models/user');
+
+        User
+          .findByIdAndUpdate(id, {
+            profile_pic: profile_pic
+          })
+          .exec((error, user) => {
+            if (error) {
+              return handleError(error);
+            }
+            console.log('heh hekhk', user);
+            res.render('userSettings', { user: user, profile_pic: profile_pic });
+          })
       }
   
-    } catch (error){
+    } catch (error) {
+      console.log("catch me outside at line 92");
       res.end(error)
     }
     
   })
   .get((req, res)=>{
-    res.render('image')
+    // res.render('image')
   })
 
 

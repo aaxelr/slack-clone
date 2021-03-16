@@ -118,7 +118,7 @@ exports.registerUser = (req, res) => {
 }
 
 exports.userSettings = (req, res) =>{
-  res.render('userSettings')
+  res.render('userSettings', { user: req.user, profile_pic: req.user.profile_pic });
 }
 
 /* exports.uploadProfilePic = (req, res)=>{
