@@ -21,6 +21,8 @@ const channelRoutes = require('./routes/channelRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 
 
+
+
 //////////////////// MIDDLEWARE ////////////////////
 
 // Static

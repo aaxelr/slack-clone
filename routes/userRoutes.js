@@ -4,7 +4,35 @@ const flash = require('connect-flash');
 const router = express.Router();
 
 const userController = require('./../controllers/userController');
+const multer = require('multer')
+const path = require('path')
+const uploadPath = 'public/uploads/'
+const storage = multer.diskStorage({
 
+  //lägg till error handler 
+  destination: (req, file, callback) =>{
+    callback(null, uploadPath) 
+    
+  },
+  //lägg till error handler 
+  filename: (req, file, callback)=>{
+    callback(null, Date.now() + path.extname(file.originalname))
+  }
+})
+
+const upload = multer({
+  limit: {
+    files: 1, 
+    fieldSize: 2 * 1024 * 1024
+  }, 
+  storage: storage, 
+  fileFilter: (req, file, callback)=>{
+    if (!file.originalname.match(/\.(jpg|png|gif)$/)){
+      callback(new Error('Only images allowed'), false)
+    }
+    callback(null, true)
+  }
+})
 // Middleware
 const logoutUser = (req, res) => {
   req.logout();
@@ -37,5 +65,37 @@ router
 router
   .route('/logout')
   .get(logoutUser);
+
+// Settings
+router
+  .route('/settings')
+  .get(userController.userSettings)
+
+
+
+router
+  .route('/settings/picture')
+  .post( upload.single('picture'), (req, res)=>{
+
+    try{
+      const profile_pic = uploadPath + req.file.filename
+  
+      if(profile_pic){
+        res.render('image', {image: profile_pic})
+        console.log(profile_pic)
+      }
+      else{
+        res.end('<h1>File not uploadaed</h1>')
+      }
+  
+    } catch (error){
+      res.end(error)
+    }
+    
+  })
+  .get((req, res)=>{
+    res.render('image')
+  })
+
 
 module.exports = router;
