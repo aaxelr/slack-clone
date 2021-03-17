@@ -89,7 +89,7 @@ const renderDashboard = (req, res) => {
     .findOne({
       _id: req.user._id
     })
-    .populate('chat_rooms')
+    //.populate('chat_rooms')
     .exec((error, user) => {
       if (error) {
         console.log(error);

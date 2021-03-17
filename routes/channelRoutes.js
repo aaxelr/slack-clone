@@ -32,7 +32,7 @@ const createChannel = (req, res) => {
 			if (channel) {
 				console.log('name already exists');
 				// flash msg
-                return 
+                return res.redirect('/channel')
 			}
 
 			newChannel = new Channel({
@@ -57,6 +57,7 @@ const createChannel = (req, res) => {
 						}
 						console.log(user);
 						res.redirect(`/channels/${channelId}`);
+						// Send message that new room was created
 					});
 			});
 		});
