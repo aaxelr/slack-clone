@@ -85,33 +85,43 @@ const renderLandingPage = (req, res) => {
 
 const renderDashboard = (req, res) => {
   const User = require('./models/user');
-  User
-    .findOne({
-      _id: req.user._id
-    })
+  const Channel = require('./models/channel');
+  Channel
+    .find(
+      { users: { $ne: req.user.id }})
     //.populate('chat_rooms')
-    .exec((error, user) => {
+    .exec((error, otherChannels) => {
       if (error) {
         console.log(error);
         return handleError(error)
       }
-      console.log(user, '@ line 98')
-      res.render('dashboard', {user: user});
+      Channel
+        .find({
+          users: req.user.id
+        })
+        .exec((error, myChannels) => {
+          if (error) {
+          console.log(error);
+          return handleError(error)
+        }
+        res.render('dashboard', {user: req.user, myChannels: myChannels, otherChannels: otherChannels});
+        })
     });
 }
 //////////////////// SOCKET ////////////////////
 
-const users = {}
+/* const users = {} */
   // Lift in IO to channelRoute
   io.on('connection', (socket) => {
     
-    socket.on('new-user', username => {
+/*     socket.on('new-user', username => {
       users[socket.id] = username
       socket.broadcast.emit('user-connected', username)
-    })
+    }) */
 
-    socket.on('chat message', (msg_info) => {
-      socket.broadcast.emit('chat message', msg_info)
+    socket.on('send-chat-message', (msg_info) => {
+      const id = msg_info.channel_id
+      socket.to(id).broadcast.emit('chat-message', msg_info)
       // spara till db
       console.log(msg_info)
     })

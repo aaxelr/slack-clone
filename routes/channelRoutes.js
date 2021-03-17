@@ -11,7 +11,7 @@ const renderCreateChannel = (req, res) => {
 }
 
 const renderChannel = (req, res) => {
-    res.render('channel', {user: req.user, roomId: req.params.id})
+    res.render('channel', {user: req.user, channel_id: req.params.id})
 }
 
 const createChannel = (req, res) => {

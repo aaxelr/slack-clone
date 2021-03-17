@@ -16,6 +16,7 @@ const currDate = `${fullYear}-${month}-${datum} ${hours}:${minutes}`
 
 const username = document.getElementById('username').value
 const user_id = document.getElementById('id').value
+const channel_id = document.getElementById('channel_id').value
 
 const data = {
         msg: 'just joined',
@@ -25,9 +26,9 @@ const data = {
 
 appendMessage(data)
 
-socket.emit('new-user', username)
+/* socket.emit('new-user', username) */
 
-socket.on('chat message', function(msg_info) {
+socket.on('chat-message', function(msg_info) {
     appendMessage(msg_info)
 })
 socket.on('user-connected', function(username) {
@@ -44,12 +45,13 @@ form.addEventListener('submit', function(e) {
     const msg_info = {
         msg: input.value,
         user: username,
-        id: user_id
+        id: user_id,
+        channel_id: channel_id
     }
     appendMessage(msg_info)
-    console.log(msg_info)
+    console.log(channel_id)
     if (input.value) {
-        socket.emit('chat message', msg_info);
+        socket.emit('send-chat-message', msg_info);
         input.value = ''
     }
 })
