@@ -49,7 +49,7 @@ const createChannel = (req, res) => {
 				
 				User
 					.findByIdAndUpdate(creatorsId, {
-                        $push: { channels: channelId}
+                        $push: { channel_rooms: channelId}
                     })
 					.exec((error, user) => {
 						if (error) {

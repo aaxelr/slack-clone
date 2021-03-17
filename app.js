@@ -19,6 +19,8 @@ const io = require('socket.io')(http);
 const userRoutes = require('./routes/userRoutes');
 const channelRoutes = require('./routes/channelRoutes');
 const chatRoutes = require('./routes/chatRoutes');
+const { compareSync } = require('bcrypt');
+const { find } = require('./models/user');
 
 
 
@@ -68,23 +70,33 @@ app.use((req, res, next) => {
 //////////////////// HANDLERS ////////////////////
 
 const renderLandingPage = (req, res) => {
+/*   const User = require('./models/user');
+  User
+  .findOne({
+      _id: '60521bd7e26c1c29f7a9065e'
+    })
+  .populate('channel_rooms')
+  .exec((error, user) => {
+    console.log(user)
+  }) */
+
   res.render('welcome');
 }
 
 const renderDashboard = (req, res) => {
-
   const User = require('./models/user');
-  User.findById(req.user._id)
+  User
+    .findOne({
+      _id: req.user._id
+    })
     .populate('chat_rooms')
-    .exec((err, user) => {
-      if (err) {
-        return handleError(err);
+    .exec((error, user) => {
+      if (error) {
+        console.log(error);
+        return handleError(error)
       }
       console.log(user, '@ line 98')
-      res.render('dashboard', {
-        user,
-        channels: [1,2,3,4]
-      });
+      res.render('dashboard', {user: user});
     });
 }
 //////////////////// SOCKET ////////////////////

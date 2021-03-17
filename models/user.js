@@ -20,7 +20,7 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'ChatRoom'
   }],
-  channels: [{
+  channel_rooms: [{
     type: Schema.Types.ObjectId,
     ref: 'Channel'
   }],

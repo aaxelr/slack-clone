@@ -38,7 +38,9 @@ const createChat = (req, res) => {
 				User
 					.updateMany(
 						{$or: [{_id: creatorsId}, {_id: user._id} ]},
-						{ chat_rooms: room._id })
+						{
+                        $push: { chat_rooms: room._id}
+                    	})
 					.exec((error) => {
 						if (error, user) {
 							console.log(error);
