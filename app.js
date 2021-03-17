@@ -73,23 +73,6 @@ const renderLandingPage = (req, res) => {
 
 const renderDashboard = (req, res) => {
 
-  // Lift in IO to channelRoute
-  io.on('connection', (socket) => {
-    socket.on('chat message', (msg) => {
-      const msg_info = {
-        msg: msg,
-        user: req.user,
-        date: new Date()
-      }
-      io.emit('chat message', msg_info)
-      console.log(msg)
-    })
-    console.log('user connected!');
-    socket.on('disconnect', () => {
-      console.log('user disconnected')
-    })
-  });
-
   const User = require('./models/user');
   User.findById(req.user._id)
     .populate('chat_rooms')
@@ -104,7 +87,29 @@ const renderDashboard = (req, res) => {
       });
     });
 }
+//////////////////// SOCKET ////////////////////
 
+const users = {}
+  // Lift in IO to channelRoute
+  io.on('connection', (socket) => {
+    
+    socket.on('new-user', username => {
+      users[socket.id] = username
+      socket.broadcast.emit('user-connected', username)
+    })
+
+    socket.on('chat message', (msg_info) => {
+      socket.broadcast.emit('chat message', msg_info)
+      // spara till db
+      console.log(msg_info)
+    })
+    console.log('user connected!');
+    console.log(socket.id);
+    console.log(socket.username);
+    socket.on('disconnect', () => {
+      console.log('user disconnected')
+    })
+  });
 
 //////////////////// ROUTES ////////////////////
 
