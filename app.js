@@ -1,26 +1,27 @@
-const path = require('path');
 const express = require('express');
 const app = express();
+const path = require('path');
 const mongoose = require('mongoose');
 const expressEjsLayout = require('express-ejs-layouts');
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
 require('./config/passport')(passport);
-const {
-  ensureAuthenticated
-} = require('./config/auth.js');
+const { ensureAuthenticated } = require('./config/auth.js');
+
 const port = 4000;
 
 const http = require('http').Server(app);
-
 const io = require('socket.io')(http);
 
+// Require routes
 const userRoutes = require('./routes/userRoutes');
 const channelRoutes = require('./routes/channelRoutes');
 const chatRoutes = require('./routes/chatRoutes');
-const { compareSync } = require('bcrypt');
-const { find } = require('./models/user');
+
+// Vad är detta?
+const { compareSync } = require('bcrypt'); // ???
+const { find } = require('./models/user'); // ???
 
 
 
@@ -43,9 +44,7 @@ app.set('view engine', 'ejs');
 app.use(expressEjsLayout);
 
 // Body Parser
-app.use(express.urlencoded({
-  extended: false
-}));
+app.use(express.urlencoded({ extended: false }));
 
 // Express session
 app.use(session({
@@ -70,15 +69,15 @@ app.use((req, res, next) => {
 //////////////////// HANDLERS ////////////////////
 
 const renderLandingPage = (req, res) => {
-/*   const User = require('./models/user');
-  User
-  .findOne({
-      _id: '60521bd7e26c1c29f7a9065e'
-    })
-  .populate('channel_rooms')
-  .exec((error, user) => {
-    console.log(user)
-  }) */
+  /*   const User = require('./models/user');
+    User
+    .findOne({
+        _id: '60521bd7e26c1c29f7a9065e'
+      })
+    .populate('channel_rooms')
+    .exec((error, user) => {
+      console.log(user)
+    }) */
 
   res.render('welcome');
 }
@@ -87,8 +86,11 @@ const renderDashboard = (req, res) => {
   const User = require('./models/user');
   const Channel = require('./models/channel');
   Channel
-    .find(
-      { users: { $ne: req.user.id }})
+    .find({
+      users: {
+        $ne: req.user.id
+      }
+    })
     //.populate('chat_rooms')
     .exec((error, otherChannels) => {
       if (error) {
@@ -101,37 +103,44 @@ const renderDashboard = (req, res) => {
         })
         .exec((error, myChannels) => {
           if (error) {
-          console.log(error);
-          return handleError(error)
-        }
-        res.render('dashboard', {user: req.user, myChannels: myChannels, otherChannels: otherChannels});
+            console.log(error);
+            return handleError(error)
+          }
+          res.render('dashboard', {
+            user: req.user,
+            myChannels: myChannels,
+            otherChannels: otherChannels
+          });
         })
     });
 }
 //////////////////// SOCKET ////////////////////
 
-/* const users = {} */
-  // Lift in IO to channelRoute
-  io.on('connection', (socket) => {
-    
-/*     socket.on('new-user', username => {
-      users[socket.id] = username
-      socket.broadcast.emit('user-connected', username)
-    }) */
+// skapa room per channel/chatroom som användare joinar.
 
-    socket.on('send-chat-message', (msg_info) => {
-      const id = msg_info.channel_id
-      socket.to(id).broadcast.emit('chat-message', msg_info)
-      // spara till db
-      console.log(msg_info)
-    })
-    console.log('user connected!');
-    console.log(socket.id);
-    console.log(socket.username);
-    socket.on('disconnect', () => {
-      console.log('user disconnected')
-    })
-  });
+
+/* const users = {} */
+// Lift in IO to channelRoute
+io.on('connection', (socket) => {
+
+  /*     socket.on('new-user', username => {
+        users[socket.id] = username
+        socket.broadcast.emit('user-connected', username)
+      }) */
+
+  socket.on('send-chat-message', (msg_info) => {
+    const id = msg_info.channel_id
+    socket.to(id).broadcast.emit('chat-message', msg_info)
+    // spara till db
+    console.log(msg_info)
+  })
+  console.log('user connected!');
+  console.log(socket.id);
+  console.log(socket.username);
+  socket.on('disconnect', () => {
+    console.log('user disconnected')
+  })
+});
 
 //////////////////// ROUTES ////////////////////
 
@@ -148,25 +157,19 @@ app
 
 //////////////////// MOUNTS ////////////////////
 
-// USERROUTEs
+// USERROUTES
 app.use('/users', userRoutes);
 
 
-// CHANNELROUTER
+// CHANNELROUTES
 app.use('/channels', channelRoutes);
 
 
-// CHATROUTER
+// CHATROUTES
 app.use('/chats', chatRoutes);
 
-/* io.on('connection', (socket) => {
-  console.log('a user connected');
-}); */
 
-
-
-
-
+//////////////////// SERVER //////////////////// bryt ut till server.js?
 http.listen(port, () => {
   console.log(`listening on port ${port}...`);
 });
