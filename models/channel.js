@@ -18,12 +18,12 @@ const ChannelSchema = new Schema({
     channel_name: {
         type: String,
         required: true
-    },
-    admin: {
+    }
+/*     admin: {
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'User'
-    },
+    } */
     
 });
 

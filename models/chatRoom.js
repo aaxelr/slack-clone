@@ -11,10 +11,10 @@ const ChatRoomSchema = new Schema({
         required: true,
         ref: 'User'
     }],
-    messages : [{
+    messages: [{
         type: Schema.Types.ObjectId,
         ref: 'ChatMessage'
-    }] 
+    }]
 });
 
 module.exports = mongoose.model('ChatRoom', ChatRoomSchema);

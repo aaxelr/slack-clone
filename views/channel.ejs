@@ -1,29 +1,14 @@
-
-
-    <ul id="channelMessages"></ul>
-    <form id="channelForm" action="">
-        <input id="channelInput" autocomplete="off" />
+<%- include('./components/header')%>
+    
+    <ul class="messagesTemplate" id="channelMessages"></ul>
+    <form class="formTemplate"id="channelForm" action="">
+        <input class="inputTemplate" id="channelInput" autocomplete="off" />
         <button id="channelSubmitButton">Send</button>
     </form>
+    <input value="<%= user.name %>" id="username" type="text">
+    <input value="<%= user._id %>" id="id" type="text">
+    <input value="<%= channel_id %>" id="channel_id" type="text">
 
 
 
 
-
-<!-- 
-<div class="container h-100">
-    <ul id="channelMessages">
-        <li class=" border border-2 h-100 mt-4" >
-            <h5>Author</h5>
-            <p></p>
-            <h6>Date</h6>
-        </li>
-    </ul>
-    <form>
-          <div class="fixed-bottom mx-auto w-75 mb-5">
-            <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
-            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-            <button type="button" class="btn btn-primary">Primary</button>          </div>
-        
-    </form>
-</div> -->

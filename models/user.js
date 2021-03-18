@@ -16,9 +16,20 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
-  is_online: {
+  chat_rooms: [{
+    type: Schema.Types.ObjectId,
+    ref: 'ChatRoom'
+  }],
+  channel_rooms: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Channel'
+  }],
+  is_online: { // är det här verkligen db's jobb??? 
     type: Boolean,
     default: false
+  },
+  profile_pic: {
+    type: String
   },
   date: {
     type: Date,

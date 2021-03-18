@@ -1,6 +1,36 @@
 const bcrypt = require('bcrypt');
 const passport = require('passport');
+const multer = require('multer')
+const path = require('path')
+const uploadPath = "public/uploads/"
+const storage = multer.diskStorage({
+
+  //lägg till error handler 
+  destination: (req, file, callback) =>{
+    callback(null, uploadPath) 
+    
+  },
+  //lägg till error handler 
+  filename: (req, file, callback)=>{
+    callback(null, Date.now() + path.extname(file.originalname))
+  }
+})
+
+exports.upload = multer({
+  limit: {
+    files: 1, 
+    fieldSize: 4 * 1024 * 1024
+  }, 
+  storage: storage, 
+  fileFilter: (req, file, callback)=>{
+    if (!file.originalname.match(/\.(jpg|png|gif)$/)){
+      callback(new Error('Only images allowed'), false)
+    }
+    callback(null, true)
+  }
+})
 require('./../config/passport')(passport);
+
 
 exports.renderLoginPage = (req, res) => {
   res.render('login');
@@ -86,3 +116,23 @@ exports.registerUser = (req, res) => {
     });
   }
 }
+
+exports.userSettings = (req, res) =>{
+  res.render('userSettings', { user: req.user, profile_pic: req.user.profile_pic });
+}
+
+/* exports.uploadProfilePic = (req, res)=>{
+  try{
+    const profile_pic = uploadPath + req.file.filename
+
+    if(profile_pic){
+      res.render('image', {image: [profile_pic]})
+    }
+    else{
+      res.end('<h1>File not uploadaed</h1>')
+    }
+
+  } catch (error){
+    res.end(error)
+  }
+} */

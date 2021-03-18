@@ -1,6 +1,6 @@
-const path = require('path');
 const express = require('express');
 const app = express();
+const path = require('path');
 const mongoose = require('mongoose');
 const expressEjsLayout = require('express-ejs-layouts');
 const flash = require('connect-flash');
@@ -8,14 +8,22 @@ const session = require('express-session');
 const passport = require('passport');
 require('./config/passport')(passport);
 const { ensureAuthenticated } = require('./config/auth.js');
+
 const port = 4000;
 
 const http = require('http').Server(app);
-
 const io = require('socket.io')(http);
 
-const userRouter = require('./routes/userRoutes');
+// Require routes
+const userRoutes = require('./routes/userRoutes');
 const channelRoutes = require('./routes/channelRoutes');
+const chatRoutes = require('./routes/chatRoutes');
+
+// Vad är detta?
+const { compareSync } = require('bcrypt'); // ???
+const { find } = require('./models/user'); // ???
+
+
 
 
 //////////////////// MIDDLEWARE ////////////////////
@@ -24,79 +32,115 @@ const channelRoutes = require('./routes/channelRoutes');
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Mongoose
-mongoose.connect('mongodb://localhost:27017/slack_clone', { 
-  useNewUrlParser: true,
-  useUnifiedTopology: true 
-})
-.then(() => console.log('connected...'))
-.catch(err => console.log(err));
+mongoose.connect('mongodb://localhost:27017/slack_clone', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+  .then(() => console.log('connected...'))
+  .catch(err => console.log(err));
 
 // EJS
 app.set('view engine', 'ejs');
 app.use(expressEjsLayout);
 
 // Body Parser
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 
 // Express session
 app.use(session({
-  secret: 'secret', 
-  resave: true, 
+  secret: 'secret',
+  resave: true,
   saveUninitialized: true
 }));
 
 // Passport
-app.use(passport.initialize()); 
-app.use(passport.session()); 
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Flash
-app.use(flash()); 
-app.use((req, res, next)=>{
+app.use(flash());
+app.use((req, res, next) => {
   res.locals.success_msg = req.flash('success_msg')
   res.locals.error_msg = req.flash('error_msg')
-  res.locals.error = req.flash('error'); 
-next(); 
+  res.locals.error = req.flash('error');
+  next();
 });
 
 //////////////////// HANDLERS ////////////////////
 
 const renderLandingPage = (req, res) => {
+  /*   const User = require('./models/user');
+    User
+    .findOne({
+        _id: '60521bd7e26c1c29f7a9065e'
+      })
+    .populate('channel_rooms')
+    .exec((error, user) => {
+      console.log(user)
+    }) */
+
   res.render('welcome');
 }
 
-const renderDashboard = (req, res) => {  
+const renderDashboard = (req, res) => {
+  const User = require('./models/user');
+  const Channel = require('./models/channel');
+  Channel
+    .find({
+      users: {
+        $ne: req.user.id
+      }
+    })
+    //.populate('chat_rooms')
+    .exec((error, otherChannels) => {
+      if (error) {
+        console.log(error);
+        return handleError(error)
+      }
+      Channel
+        .find({
+          users: req.user.id
+        })
+        .exec((error, myChannels) => {
+          if (error) {
+            console.log(error);
+            return handleError(error)
+          }
+          res.render('dashboard', {
+            user: req.user,
+            myChannels: myChannels,
+            otherChannels: otherChannels
+          });
+        })
+    });
+}
+//////////////////// SOCKET ////////////////////
 
-  // Lift in IO to channelRoute
-  io.on('connection', (socket) => {
-  socket.on('chat message', (msg) => {
-    const msg_info = {
-      msg: msg,
-      user: req.user,
-      date: new Date()
-    }
-    io.emit('chat message', msg_info)
-    console.log(msg)
+// skapa room per channel/chatroom som användare joinar.
+
+
+/* const users = {} */
+// Lift in IO to channelRoute
+io.on('connection', (socket) => {
+
+  /*     socket.on('new-user', username => {
+        users[socket.id] = username
+        socket.broadcast.emit('user-connected', username)
+      }) */
+
+  socket.on('send-chat-message', (msg_info) => {
+    const id = msg_info.channel_id
+    socket.to(id).broadcast.emit('chat-message', msg_info)
+    // spara till db
+    console.log(msg_info)
   })
   console.log('user connected!');
+  console.log(socket.id);
+  console.log(socket.username);
   socket.on('disconnect', () => {
     console.log('user disconnected')
   })
 });
-  const channels = require('./models/channel');
-  channels.find({
-    users: req.user._id
-  })
-
-  .exec((err, channels) => {
-
-    res.render('dashboard', { 
-
-      user: req.user, 
-      channels: channels    
-      });
-    });
-}
-
 
 //////////////////// ROUTES ////////////////////
 
@@ -105,34 +149,27 @@ app
   .route('/')
   .get(renderLandingPage);
 
-// Dashboard
+// Dashboard (bryt)
 app
   .route('/dashboard')
   .get(ensureAuthenticated, renderDashboard);
 
 
-
 //////////////////// MOUNTS ////////////////////
 
-// USERROUTER
-app.use('/users', userRouter);
-  
-  
-// CHANNELROUTER
- app.use('/channels', channelRoutes);
+// USERROUTES
+app.use('/users', userRoutes);
 
 
-// CHATROUTER
-// app.use('/chat', chatRouter);
-
-/* io.on('connection', (socket) => {
-  console.log('a user connected');
-}); */
- 
+// CHANNELROUTES
+app.use('/channels', channelRoutes);
 
 
+// CHATROUTES
+app.use('/chats', chatRoutes);
 
 
+//////////////////// SERVER //////////////////// bryt ut till server.js?
 http.listen(port, () => {
   console.log(`listening on port ${port}...`);
 });
