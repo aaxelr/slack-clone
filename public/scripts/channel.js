@@ -3,6 +3,9 @@ const socket = io();
 const form = document.getElementById('channelForm');
 const input = document.getElementById('channelInput');
 const messages = document.getElementById('channelMessages');
+const enterRoomBtns = document.querySelectorAll('.enter-room');
+
+console.log(enterRoomBtns);
 
 const d = new Date();
 const datum = d.getDate();
@@ -32,16 +35,23 @@ socket.on('new users', (users) => {
   users.forEach(user => {
     const li = document.createElement('li');
     li.classList.add("nav-item", "nav-link");
-    li.textContent = `🔵 ${user.username}`; 
+    li.textContent = `🔵 ${user.username}`;
     onlineList.appendChild(li);
   });
   console.log(users);
 });
 
-/* join room tbc */
-socket.on('join room', () => {
+
+//FORTSÄTT HÄR EFTER LUNCH
+enterRoomBtns.forEach(btn => {
   const channel_id = document.getElementById('channel_id').value;
+
+  btn.addEventListener('click', () => {
+    socket.emit('join room', (username, channel_id));
+  });
 });
+
+/* join room tbc */
 
 socket.on('chat-message', (msg_info) => {
   appendMessage(msg_info)
@@ -55,6 +65,10 @@ socket.on('user-connected', (username) => {
   }
   appendMessage(user_connected_data);
 })
+
+socket.on('test', username => {
+  alert(username);
+});
 
 form.addEventListener('submit', (e) => {
   const channel_id = document.getElementById('channel_id').value;

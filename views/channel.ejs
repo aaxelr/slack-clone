@@ -1,10 +1,19 @@
 <%- include('./components/header')%>
+
+<div class="d-flex vh-100">
     
-    <ul class="messagesTemplate" id="channelMessages"></ul>
-    <form class="formTemplate"id="channelForm" action="">
-        <input class="inputTemplate" id="channelInput" autocomplete="off" />
-        <button id="channelSubmitButton">Send</button>
-    </form>
-    <input value="<%= user.name %>" id="username" type="text">
-    <input value="<%= user._id %>" id="id" type="text">
-    <input value="<%= channel_id %>" id="channel_id" type="text">
+    <%- include('./components/sidebar') %>  
+
+    <div>
+        
+        <ul class="messagesTemplate" id="channelMessages"></ul>
+        <form class="formTemplate"id="channelForm" action="">
+            <input class="inputTemplate" id="channelInput" autocomplete="off" />
+            <button id="channelSubmitButton">Send</button>
+        </form>
+        <input value="<%= user.name %>" id="username" type="text">
+        <input value="<%= user._id %>" id="id" type="text">
+        <input value="<%= channel_id %>" id="channel_id" type="text">
+        
+    </div>
+</div>

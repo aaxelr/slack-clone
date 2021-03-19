@@ -141,10 +141,19 @@ io.on('connection', socket => {
     io.emit('new users', users);
   });
 
-  socket.on('join room', (roomName, callback) => {
+  //FORTSÄTT HÄR EFTER LUNCH
+  socket.on('join room', (username, roomName) => {
+    console.log('join roooooom');
+    socket.join(roomName);
+    socket.to(roomName).emit('test', username)
+
+    //socket.to(room).broadcast.emit('user-connected', name)
+  })
+
+  /* socket.on('join room', (roomName, callback) => {
     socket.join(roomName);
     callback(messages[roomName]); //här hämtar vi snarare från mongoDB?
-  });
+  }); */
 
   // Chaim skiljer på privatchat och kanal endast genom en boolean...
   // osäker på hur vi anpassar send message till vår app? eller om vi ska anpassa vår app till send message...
