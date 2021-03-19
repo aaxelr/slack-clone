@@ -8,7 +8,6 @@ module.exports = function (passport) {
 			usernameField: 'email'
 		}, (email, password, done) => {
 			//match user
-
 			User.findOne({
 					email: email
 				})

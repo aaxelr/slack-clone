@@ -36,11 +36,13 @@ const createChat = (req, res) => {
 				const chatRoomId = room._id;
 
 				User
-					.updateMany(
-						{$or: [{_id: creatorsId}, {_id: user._id} ]},
-						{
-                        $push: { chat_rooms: room._id}
-                    	})
+					.updateMany({
+						$or: [
+							{ _id: creatorsId },
+							{	_id: user._id }
+						]}, {
+						$push: { chat_rooms: room._id }
+					})
 					.exec((error) => {
 						if (error, user) {
 							console.log(error);
@@ -53,16 +55,16 @@ const createChat = (req, res) => {
 }
 
 const renderChatRoom = (req, res) => {
-	res.render('chatRoom')
+	res.render('chatRoom');
 }
 
 router
 	.route('/')
 	.get(renderChatInvite)
-	.post(createChat)
+	.post(createChat);
 
 router
 	.route('/:id')
-	.get(renderChatRoom)
+	.get(renderChatRoom);
 
 module.exports = router;

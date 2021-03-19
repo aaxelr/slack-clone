@@ -1,35 +1,33 @@
 const bcrypt = require('bcrypt');
 const passport = require('passport');
+require('./../config/passport')(passport);
 const multer = require('multer')
 const path = require('path')
 const uploadPath = "public/uploads/"
 const storage = multer.diskStorage({
-
-  //lägg till error handler 
-  destination: (req, file, callback) =>{
-    callback(null, uploadPath) 
-    
+  destination: (req, file, callback) => {
+    callback(null, uploadPath);
+    //lägg till error handler 
   },
-  //lägg till error handler 
-  filename: (req, file, callback)=>{
-    callback(null, Date.now() + path.extname(file.originalname))
+  filename: (req, file, callback) => {
+    callback(null, Date.now() + path.extname(file.originalname));
+    //lägg till error handler 
   }
-})
+});
 
 exports.upload = multer({
   limit: {
-    files: 1, 
+    files: 1,
     fieldSize: 4 * 1024 * 1024
-  }, 
-  storage: storage, 
-  fileFilter: (req, file, callback)=>{
-    if (!file.originalname.match(/\.(jpg|png|gif)$/)){
-      callback(new Error('Only images allowed'), false)
+  },
+  storage: storage,
+  fileFilter: (req, file, callback) => {
+    if (!file.originalname.match(/\.(jpg|png|gif)$/)) {
+      callback(new Error('Only images allowed'), false);
     }
-    callback(null, true)
+    callback(null, true);
   }
-})
-require('./../config/passport')(passport);
+});
 
 
 exports.renderLoginPage = (req, res) => {
@@ -51,74 +49,89 @@ exports.renderRegisterPage = (req, res) => {
 exports.registerUser = (req, res) => {
   const User = require('../models/user');
 
-  const { name, email, password } = req.body;
+  const {
+    name,
+    email,
+    password
+  } = req.body;
   const errors = [];
 
-  if (!name || !email || !password) {
-    errors.push({ msg: 'Please fill in all fields' });
+  if (!name || !email || !password) {
+    errors.push({
+      msg: 'Please fill in all fields'
+    });
   }
 
   if (password.length < 6) {
-    errors.push({ msg: 'password must be longer then 6 characters' });
+    errors.push({
+      msg: 'password must be longer then 6 characters'
+    });
   }
 
   if (errors.length > 0) {
     res.render('register', {
       errors: errors,
-      name : name,
-      email : email,
-      password : password
+      name: name,
+      email: email,
+      password: password
     });
   } else {
     // validation passed
     User
-    .findOne({ email: email })
-    .exec((err, user) => {
-      console.log(user);
-      if (user) {
-        errors.push({ msg: 'email already exists!' });
-        console.log(errors);
-        // va hände här, knas i tutorial?
-        res.render('register', {
-        errors: errors,
-        name : name,
-        email : email,
-        password : password
-      });
+      .findOne({
+        email: email
+      })
+      .exec((err, user) => {
+        console.log(user);
+        if (user) {
+          errors.push({
+            msg: 'email already exists!'
+          });
+          console.log(errors);
+          // va hände här, knas i tutorial?
+          res.render('register', {
+            errors: errors,
+            name: name,
+            email: email,
+            password: password
+          });
 
-      } else {
-        const newUser = new User({
-          name: name, 
-          email: email,
-          password: password
-        });
+        } else {
+          const newUser = new User({
+            name: name,
+            email: email,
+            password: password
+          });
 
-        //Hash password
-        bcrypt.genSalt(10, (err, salt) => {
-          return bcrypt.hash(newUser.password, salt,
-            (err, hash) => {
-              if (err) throw err; 
+          //Hash password
+          bcrypt.genSalt(10, (err, salt) => {
+            return bcrypt.hash(newUser.password, salt,
+              (err, hash) => {
+                if (err) throw err;
                 //Save pass to hash
-                newUser.password = hash; 
+                newUser.password = hash;
                 //Save user
                 newUser
-                .save()
-                .then((value) =>{
-                  console.log(value);
-                  req.flash('success_msg', 'You have now registered');
-                  res.redirect('/users/login');
-                })
-                .catch(value => console.log(value));
-            }
+                  .save()
+                  .then((value) => {
+                    console.log(value);
+                    req.flash('success_msg', 'You have now registered');
+                    res.redirect('/users/login');
+                  })
+                  .catch(value => console.log(value));
+              }
             );
-        });
-      }
-    });
+          });
+        }
+      });
   }
 }
 
-exports.userSettings = (req, res) =>{
-  res.render('userSettings', { user: req.user, profile_pic: req.user.profile_pic });
+exports.userSettings = (req, res) => {
+  res.render('userSettings', {
+    user: req.user,
+    profile_pic: req.user.profile_pic
+  });
 }
 
 /* exports.uploadProfilePic = (req, res)=>{

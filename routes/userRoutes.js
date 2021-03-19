@@ -8,17 +8,15 @@ const multer = require('multer');
 const path = require('path');
 const uploadPath = 'public/uploads/';
 const storage = multer.diskStorage({
-
-  //lägg till error handler 
   destination: (req, file, callback) => {
     callback(null, uploadPath)
-
+    //lägg till error handler 
   },
-  //lägg till error handler 
   filename: (req, file, callback) => {
     callback(null, Date.now() + path.extname(file.originalname))
+    //lägg till error handler 
   }
-})
+});
 
 const upload = multer({
   limit: {
@@ -28,9 +26,9 @@ const upload = multer({
   storage: storage,
   fileFilter: (req, file, callback) => {
     if (!file.originalname.match(/\.(jpg|png|gif)$/)) {
-      callback(new Error('Only images of type jpg, png and gif allowed'), false)
+      callback(new Error('Only images of type jpg, png and gif allowed'), false);
     }
-    callback(null, true)
+    callback(null, true);
   }
 })
 // Middleware
@@ -72,6 +70,7 @@ router
   .get(userController.userSettings);
 
 // Settings/Picture
+// bryt ut upload till userController.js
 router
   .route('/settings/picture')
   .post(upload.single('picture'), (req, res) => {

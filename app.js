@@ -7,7 +7,9 @@ const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
 require('./config/passport')(passport);
-const { ensureAuthenticated } = require('./config/auth.js');
+const {
+  ensureAuthenticated
+} = require('./config/auth.js');
 
 const port = 4000;
 
@@ -20,8 +22,12 @@ const channelRoutes = require('./routes/channelRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 
 // Vad är detta?
-const { compareSync } = require('bcrypt'); // ???
-const { find } = require('./models/user'); // ???
+const {
+  compareSync
+} = require('bcrypt'); // ???
+const {
+  find
+} = require('./models/user'); // ???
 
 
 
@@ -44,7 +50,9 @@ app.set('view engine', 'ejs');
 app.use(expressEjsLayout);
 
 // Body Parser
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({
+  extended: false
+}));
 
 // Express session
 app.use(session({
@@ -111,22 +119,88 @@ const renderDashboard = (req, res) => {
             myChannels: myChannels,
             otherChannels: otherChannels
           });
-        })
+        });
     });
 }
 //////////////////// SOCKET ////////////////////
+// coding with Chaim test
+let users = [];
+
+// kan användas (tsm med disconnect längst ner) 
+// för att visa vilka som är online/offline
+
+// ändra username för att passa vår app...
+io.on('connection', socket => {
+  socket.on('join server', (username) => { // här ska vi ha vår user (req.user/id?) kommer från client
+    console.log(username);
+    const user = {
+      username: username, 
+      id: socket.id,
+    }
+    users.push(user);
+    io.emit('new users', users);
+  });
+
+  socket.on('join room', (roomName, callback) => {
+    socket.join(roomName);
+    callback(messages[roomName]); //här hämtar vi snarare från mongoDB?
+  });
+
+  // Chaim skiljer på privatchat och kanal endast genom en boolean...
+  // osäker på hur vi anpassar send message till vår app? eller om vi ska anpassa vår app till send message...
+
+  socket.on('send message', ({
+    content,
+    to, //to är chatrum eller kanal
+    sender,
+    chatName,
+    isChannel
+  }) => {
+    if (isChannel) {
+      const payload = {
+        content,
+        chatName,
+        sender
+      }
+      socket.to(to).emit('new message', payload);
+    } else {
+      const payload = {
+        content,
+        chatName: sender,
+        sender
+      }
+      socket.to(to).emit('new message', payload);
+    }
+    if (messages[chatName]) {
+      messages[chatName].push({
+        sender,
+        content,
+      });
+    }
+  })
+  
+  socket.on('disconnect', () => {
+    users = users.filter(user => user.id !== socket.id);
+    io.emit('new user', users);
+  });
+});
+
+
+
+
 
 // skapa room per channel/chatroom som användare joinar.
 
 
-/* const users = {} */
+
+/* const users = {} 
 // Lift in IO to channelRoute
 io.on('connection', (socket) => {
 
   /*     socket.on('new-user', username => {
         users[socket.id] = username
         socket.broadcast.emit('user-connected', username)
-      }) */
+      }) 
 
   socket.on('send-chat-message', (msg_info) => {
     const id = msg_info.channel_id
@@ -142,6 +216,7 @@ io.on('connection', (socket) => {
   })
 });
 
+*/
 //////////////////// ROUTES ////////////////////
 
 // Landing page
