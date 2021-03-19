@@ -132,23 +132,35 @@ let users = [];
 // ändra username för att passa vår app...
 io.on('connection', socket => {
   socket.on('join server', (username) => { // här ska vi ha vår user (req.user/id?) kommer från client
+    console.log(socket.id, '$$$$$ 135');
     console.log(username);
     const user = {
       username: username, 
       id: socket.id,
     }
     users.push(user);
+    console.log(users);
     io.emit('new users', users);
+
   });
 
-  //FORTSÄTT HÄR EFTER LUNCH
+  
   socket.on('join room', (username, roomName) => {
-    console.log('join roooooom');
-    socket.join(roomName);
-    socket.to(roomName).emit('test', username)
+    socket.join(roomName); // ???????
+    console.log(socket.id, '&&&&& 148')
+    console.log(socket.rooms);
+    socket.to(roomName).emit('test', username, roomName);
 
     //socket.to(room).broadcast.emit('user-connected', name)
   })
+ 
+  
+  socket.on('send-chat-message', (msg_info) => {
+    const id = msg_info.channel_id;
+    socket.to(id).emit('chat-message', msg_info);
+    // spara till db
+    console.log(msg_info) // funkar
+  });
 
   /* socket.on('join room', (roomName, callback) => {
     socket.join(roomName);
@@ -158,7 +170,7 @@ io.on('connection', socket => {
   // Chaim skiljer på privatchat och kanal endast genom en boolean...
   // osäker på hur vi anpassar send message till vår app? eller om vi ska anpassa vår app till send message...
 
-  socket.on('send message', ({
+  /* socket.on('send message', ({
     content,
     to, //to är chatrum eller kanal
     sender,
@@ -186,7 +198,7 @@ io.on('connection', socket => {
         content,
       });
     }
-  })
+  }) */
   
   socket.on('disconnect', () => {
     users = users.filter(user => user.id !== socket.id);

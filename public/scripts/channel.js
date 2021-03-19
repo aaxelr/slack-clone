@@ -3,9 +3,7 @@ const socket = io();
 const form = document.getElementById('channelForm');
 const input = document.getElementById('channelInput');
 const messages = document.getElementById('channelMessages');
-const enterRoomBtns = document.querySelectorAll('.enter-room');
-
-console.log(enterRoomBtns);
+//const enterRoomBtns = document.getElementsByClassName('enter-room');
 
 const d = new Date();
 const datum = d.getDate();
@@ -19,6 +17,7 @@ const currDate = `${fullYear}-${month}-${datum} ${hours}:${minutes}`;
 // ev byta hidden inputs mot fetch om tid finnes?
 const username = document.getElementById('username').value;
 const user_id = document.getElementById('id').value;
+const channel_id = document.getElementById('channel_id').value;
 
 const data = {
   msg: 'just joined',
@@ -28,6 +27,8 @@ const data = {
 
 /* socket.emit('new-user', username) */
 socket.emit('join server', username);
+
+socket.emit('join room', username, channel_id);
 
 socket.on('new users', (users) => {
   const onlineList = document.getElementById('online-list');
@@ -42,18 +43,31 @@ socket.on('new users', (users) => {
 });
 
 
+function joinRoom(channel_id) {
+  //const channel_id = document.getElementById('channel_id').value;
+  console.log(channel_id);
+  /* 
+  socket.emit('join room', username, channel_id); */
+}
+
 //FORTSÄTT HÄR EFTER LUNCH
+/* enterRoomBtns.addEventListener('click', () => {
+  alert('hejhhh');
+}) */
+
+/* 
 enterRoomBtns.forEach(btn => {
   const channel_id = document.getElementById('channel_id').value;
-
   btn.addEventListener('click', () => {
+    alert('HEJ SA JAG JU!')
     socket.emit('join room', (username, channel_id));
   });
-});
+}); */
 
 /* join room tbc */
 
 socket.on('chat-message', (msg_info) => {
+  console.log(msg_info);
   appendMessage(msg_info)
 });
 
@@ -66,8 +80,11 @@ socket.on('user-connected', (username) => {
   appendMessage(user_connected_data);
 })
 
-socket.on('test', username => {
-  alert(username);
+socket.on('test', (...test) => {
+  // vi kommer aldrig hit... jmf. app.js:145-147
+  console.log(test);
+  alert('hej')
+  console.log('hejjgejjgjejgje');
 });
 
 form.addEventListener('submit', (e) => {
@@ -79,8 +96,8 @@ form.addEventListener('submit', (e) => {
     id: user_id,
     channel_id: channel_id
   }
-  appendMessage(msg_info);
-  console.log(channel_id);
+ //  appendMessage(msg_info);
+  //console.log(channel_id);
   if (input.value) {
     socket.emit('send-chat-message', msg_info);
     input.value = '';

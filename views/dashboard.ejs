@@ -14,7 +14,8 @@
         <div class="card-body">
           <h5 class="card-title"><%=channel.channel_name%></h5>
           <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a href="/channels/<%= channel._id %>" class="btn btn-primary enter-room">Go to channel</a>
+          <a href="/channels/<%= channel._id %>" 
+           onclick="joinRoom('<%= channel.id %>')" class="btn btn-primary enter-room">Go to channel</a>
         </div>
       </div>
       <% }); %>
@@ -24,7 +25,7 @@
           <div class="card-body">
             <h5 class="card-title"><%=channel.channel_name%></h5>
             <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            <a href="/channels/<%= channel._id %>" class="btn btn-primary enter-room">Join</a>
+            <a href="/channels/<%= channel._id %>" onclick="joinRoom('<%= channel.id %>')" class="btn btn-primary enter-room">Join</a>
           </div>
           <% }); %>
       </div>
