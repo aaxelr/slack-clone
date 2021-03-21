@@ -11,7 +11,27 @@ const renderCreateChannel = (req, res) => {
 }
 
 const renderChannel = (req, res) => {
-    res.render('channel', {user: req.user, channel_id: req.params.id})
+
+	const ChannelPost = require('../models/channelPost')
+	const Channel = require('../models/channel')
+
+	Channel
+		.findById(req.params.id)
+		.populate({
+			path: 'posts',
+    		populate : {
+      		path : 'author'
+			}
+  		})
+
+		.exec((error, channel) => {
+            if (error) {
+                return handleError(error)
+            }
+            console.log(channel)
+			res.render('channel', {user: req.user, channel_id: req.params.id, posts: channel.posts})
+        })
+
 }
 
 const createChannel = (req, res) => {
@@ -38,7 +58,8 @@ const createChannel = (req, res) => {
 			newChannel = new Channel({
 				users: creatorsId,
                 admin: creatorsId,
-                channel_name: channelName
+                channel_name: channelName,
+				isPrivate: false
 
 			}).save((error, channel) => {
 				if (error) {

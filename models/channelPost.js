@@ -14,7 +14,6 @@ const ChannelPostSchema = new Schema({
     post : {
         type: String,
     },
-    attachment: {},
     mentions: [{
         type: Schema.Types.ObjectId,
         ref: 'User'

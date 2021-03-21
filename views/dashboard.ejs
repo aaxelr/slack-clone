@@ -10,7 +10,6 @@
   <div class="container row">
     <% myChannels.forEach(channel => { %>
       <div class="card col-4">
-        <!-- <img src="..." class="card-img-top" alt="..."> -->
         <div class="card-body">
           <h5 class="card-title"><%=channel.channel_name%></h5>
           <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
@@ -18,16 +17,17 @@
         </div>
       </div>
       <% }); %>
-      <div class="card col-4">
-        <% otherChannels.forEach(channel => { %>
-          <!-- <img src="..." class="card-img-top" alt="..."> -->
+      
+      <% otherChannels.forEach(channel => { %>
+        <div class="card col-4">
+          
           <div class="card-body">
             <h5 class="card-title"><%=channel.channel_name%></h5>
             <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
             <a href="/channels/<%= channel._id %>" class="btn btn-primary">Join</a>
           </div>
+        </div>
           <% }); %>
-      </div>
   </div>
   <a class="btn btn-primary" href='/channels'>New channel</a>
  
