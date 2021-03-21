@@ -94,11 +94,7 @@ router
             if (error) {
               return handleError(error);
             }
-            console.log('heh hekhk', user);
-            res.render('userSettings', {
-              user: user,
-              profile_pic: profile_pic
-            });
+            res.render('userSettings', { user: user, profile_pic: profile_pic });
           })
       }
 

@@ -3,6 +3,8 @@ const app = express();
 const path = require('path');
 const mongoose = require('mongoose');
 const expressEjsLayout = require('express-ejs-layouts');
+const formatMessage = require('./utils/messages')
+const { userJoin, getCurrentUser } = require('./utils/users')
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
@@ -18,10 +20,11 @@ const io = require('socket.io')(http);
 const userRoutes = require('./routes/userRoutes');
 const channelRoutes = require('./routes/channelRoutes');
 const chatRoutes = require('./routes/chatRoutes');
+// const { compareSync } = require('bcrypt');
+// const { find } = require('./models/user');
 
-// Vad är detta?
-const { compareSync } = require('bcrypt'); // ???
-const { find } = require('./models/user'); // ???
+const ChannelPost = require('./models/channelPost')
+const Channel = require('./models/channel')
 
 
 
@@ -116,30 +119,55 @@ const renderDashboard = (req, res) => {
 }
 //////////////////// SOCKET ////////////////////
 
-// skapa room per channel/chatroom som användare joinar.
+// kan användas (tsm med disconnect längst ner) 
+// för att visa vilka som är online/offline
 
+// ändra username för att passa vår app...
+io.on('connection', socket => {
+  console.log('User connected')
 
-/* const users = {} */
-// Lift in IO to channelRoute
-io.on('connection', (socket) => {
+  socket.on('join-room', ({username, channel_id}) => {
 
-  /*     socket.on('new-user', username => {
-        users[socket.id] = username
-        socket.broadcast.emit('user-connected', username)
-      }) */
+    const user = userJoin( socket.id, username, channel_id)
 
-  socket.on('send-chat-message', (msg_info) => {
-    const id = msg_info.channel_id
-    socket.to(id).broadcast.emit('chat-message', msg_info)
+    socket.join(user.channel_id)
+
+  })
+
+  // listen for chat messages
+  socket.on('chat-message', (msg_info) => {
+
     // spara till db
-    console.log(msg_info)
+
+    const newChannelPost = new ChannelPost({
+      author: msg_info.id,
+      post: msg_info.msg   
+    })
+
+    newChannelPost.save((error, channelPost) => {
+      if (error) {
+        return handleError(error);
+			}     
+      Channel.findByIdAndUpdate(msg_info.channel_id, {
+        $push: { posts: channelPost._id}
+      })
+      .exec((error, channel) => {
+        if (error) {
+          console.log(error);
+        }
+      })
+    })
+
+    const user = getCurrentUser(socket.id)
+    console.log(user)
+    io.to(user.channel_id).emit('message', msg_info)
+
   })
-  console.log('user connected!');
-  console.log(socket.id);
-  console.log(socket.username);
-  socket.on('disconnect', () => {
-    console.log('user disconnected')
-  })
+    // this runs when a user disconnects
+    socket.on('disconnect', () => {
+    console.log('User connected')
+    
+  });
 });
 
 //////////////////// ROUTES ////////////////////

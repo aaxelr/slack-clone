@@ -1,13 +1,25 @@
 <%- include('./components/header')%>
     
-    <ul class="messagesTemplate" id="channelMessages"></ul>
+    <ul class="messagesTemplate" id="channelMessages">
+        <% if(typeof posts !== 'undefined') { %>
+            <% posts.forEach(post => { %>
+                <li>
+                    <h5><%= post.author.name %></h5>
+                    <p> <%= post.post %></p>
+                    <h6><%= post.time_stamp %></h6>
+                </li>
+            <% }) %>
+        <% } %>
+    </ul>
     <form class="formTemplate"id="channelForm" action="">
         <input class="inputTemplate" id="channelInput" autocomplete="off" />
         <button id="channelSubmitButton">Send</button>
     </form>
-    <input value="<%= user.name %>" id="username" type="text">
-    <input value="<%= user._id %>" id="id" type="text">
-    <input value="<%= channel_id %>" id="channel_id" type="text">
+    <input hidden value="<%= user.name %>" id="username" type="text">
+    <input hidden value="<%= user._id %>" id="id" type="text">
+    <input hidden value="<%= channel_id %>" id="channel_id" type="text">
+
+    <script src="../public/scripts/channel.js"></script>
 
 
 

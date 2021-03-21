@@ -13,18 +13,21 @@ const ChannelSchema = new Schema({
     }],
     posts : [{
         type: Schema.Types.ObjectId,
-        ref: 'ChannelMessage'
+        ref: 'ChannelPost'
     }],
     channel_name: {
         type: String,
         required: true
-    }
-/*     admin: {
+    },
+    admin: {
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'User'
-    } */
-    
+    },
+    isPrivate: {
+        required: true,
+        type: Boolean
+    }
 });
 
 module.exports = mongoose.model('Channel', ChannelSchema);
