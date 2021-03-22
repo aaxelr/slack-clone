@@ -63,7 +63,7 @@ const createChannel = (req, res) => {
 	
 	const channelName = req.body.channelName ? req.body.channelName : `${req.user.name} ${userSelect[1]}`; 
 	const description = req.body.description;
-	const users = userSelect == null ? [creatorsId] : [userSelect[0], creatorsId];
+	const users = userSelect == 'null' ? [creatorsId] : [userSelect[0], creatorsId];
 
 
 	Channel
