@@ -1,37 +1,39 @@
 <%- include('components/header') %>
 
-<div class="d-flex  vh-100">
+<div class="d-flex vh-100">
+  <div class="col-2"><%- include('./components/sidebar') %></div>
+  <div class="col-10">
+    <div class="container">
+      <div class="d-flex flex-row-reverse mt-4">
+        <a class="btn btn-success mt-auto" href="/channels">New</a>
+      </div>
 
-  <%- include('./components/sidebar') %>
-  <div class="container">
-  <div class="d-flex flex-row-reverse mt-4">
-  <a class="btn btn-success mt-auto " href='/channels'>New</a>
-  </div>
-  
-  <div class="section row p-2">
-     
-    <h2>Private Chats</h2>
-      <% chats.forEach(chat => { %>
-        
-          <div class="card col-4">
-            <div class="card-body">
-              <a href="/channels/<%= chat._id %>"><h5 class="card-title"><%=chat.channel_name%></h5></a>
-            </div>
-          </div> 
-      <% }); %>
-      
+      <div class="section row p-2">
+        <h2>Private Chats</h2>
+        <% chats.forEach(chat => { %>
 
-      <h2 class="mt-3">Channels</h2>
-      <% channels.forEach(channel => { %>
-        
-          <div class="card col-4">
-
-            <div class="card-body">
-              <a href="/channels/<%= channel._id %>"><h5 class="card-title"><%=channel.channel_name%></h5></a>
-              <p class="card-text"><%= channel.description %></p>
-            </div>
+        <div class="card col-4">
+          <div class="card-body">
+            <a href="/channels/<%= chat._id %>"
+              ><h5 class="card-title"><%=chat.channel_name%></h5></a
+            >
           </div>
-      <% }); %>
+        </div>
+        <% }); %>
+
+        <h2 class="mt-3">Channels</h2>
+        <% channels.forEach(channel => { %>
+
+        <div class="card col-4">
+          <div class="card-body">
+            <a href="/channels/<%= channel._id %>"
+              ><h5 class="card-title"><%=channel.channel_name%></h5></a
+            >
+            <p class="card-text"><%= channel.description %></p>
+          </div>
+        </div>
+        <% }); %>
+      </div>
     </div>
   </div>
 </div>

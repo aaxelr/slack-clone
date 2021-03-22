@@ -1,24 +1,40 @@
 <%- include('./components/header')%>
-    
+<div class="col-12 row m-0">
+<div class="col-2 h-auto p-0">
+<%- include('./components/sidebar')%>
+</div>
+<div class="col-10 p-0"> 
     <ul class="messagesTemplate" id="channelMessages">
         <% if(typeof posts !== 'undefined') { %>
             <% posts.forEach(post => { %>
                 <li>
                     <h5><%= post.author.name %></h5>
                     <p> <%= post.post %></p>
-                    <h6><%= post.time_stamp %></h6>
+                    <%  const d = post.time_stamp;
+                        const datum = d.getDate()
+                        const month = d.getMonth()+1
+                        const fullYear = d.getFullYear()
+                        const hours = d.getHours()
+                        let minutes = d.getMinutes()
+                        minutes = minutes > 9 ? minutes : '0' + minutes;    
+                        const currDate = `${fullYear}-${month}-${datum} ${hours}:${minutes}`
+                    %>
+                    <h6><%= currDate %></h6>
                 </li>
             <% }) %>
         <% } %>
     </ul>
-    <form class="formTemplate"id="channelForm" action="">
+    <form class="formTemplate col-10"id="channelForm" action="">
         <input class="inputTemplate" id="channelInput" autocomplete="off" />
         <button id="channelSubmitButton">Send</button>
     </form>
+
     <input hidden value="<%= user.name %>" id="username" type="text">
     <input hidden value="<%= user._id %>" id="id" type="text">
     <input hidden value="<%= channel_id %>" id="channel_id" type="text">
-
+    
+</div>
+</div>
     <script src="../public/scripts/channel.js"></script>
 
 

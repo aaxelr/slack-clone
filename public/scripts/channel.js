@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', (e) => {
-
     const form = document.getElementById('channelForm')
     const input = document.getElementById('channelInput')
     const messages = document.getElementById('channelMessages')
@@ -9,14 +8,13 @@ document.addEventListener('DOMContentLoaded', (e) => {
     const month = d.getMonth()+1
     const fullYear = d.getFullYear()
     const hours = d.getHours()
-    const minutes = d.getMinutes()
-    const seconds = d.getSeconds()
+    let minutes = d.getMinutes()
+    minutes = minutes > 9 ? minutes : '0' + minutes;    
     const currDate = `${fullYear}-${month}-${datum} ${hours}:${minutes}`
 
     const username = document.getElementById('username').value
     const user_id = document.getElementById('id').value
     const channel_id = document.getElementById('channel_id').value
-
 
     form.addEventListener('submit', (e) => {
         
@@ -34,6 +32,8 @@ document.addEventListener('DOMContentLoaded', (e) => {
             input.value = '';
         }
     });
+
+
 
     function appendMessage(msg_info) {
         const item = document.createElement('li');
