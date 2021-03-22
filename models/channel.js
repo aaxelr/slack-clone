@@ -11,6 +11,9 @@ const ChannelSchema = new Schema({
         required: true,
         ref: 'User'
     }],
+    description: {
+        type: String
+    },
     posts : [{
         type: Schema.Types.ObjectId,
         ref: 'ChannelPost'
@@ -26,7 +29,8 @@ const ChannelSchema = new Schema({
     },
     isPrivate: {
         required: true,
-        type: Boolean
+        type: Boolean,
+        default: false
     }
 });
 

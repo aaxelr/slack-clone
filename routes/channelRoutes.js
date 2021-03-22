@@ -6,7 +6,19 @@ const io = require('socket.io')(http);
 
 
 const renderCreateChannel = (req, res) => {
-	res.render('channelCreate');
+	const User = require('../models/user')
+
+	User
+		.find()
+		.exec((error, users) => {
+			if (error) {
+				return handleError(error);
+			}
+			console.log(users);
+			res.render('channelCreate', {
+				users
+			});
+		});
 }
 
 const renderChannel = (req, res) => {
@@ -18,18 +30,22 @@ const renderChannel = (req, res) => {
 		.findById(req.params.id)
 		.populate({
 			path: 'posts',
-    		populate : {
-      		path : 'author'
+			populate: {
+				path: 'author'
 			}
-  		})
+		})
 
 		.exec((error, channel) => {
-            if (error) {
-                return handleError(error)
-            }
-            console.log(channel)
-			res.render('channel', {user: req.user, channel_id: req.params.id, posts: channel.posts})
-        })
+			if (error) {
+				return handleError(error)
+			}
+			console.log(channel)
+			res.render('channel', {
+				user: req.user,
+				channel_id: req.params.id,
+				posts: channel.posts
+			})
+		})
 
 }
 
@@ -37,11 +53,23 @@ const createChannel = (req, res) => {
 	const Channel = require('../models/channel');
 	const User = require('../models/user');
 	const creatorsId = req.user._id;
-	const channelName = req.body.channelNameInput;
+	const userSelect = req.body.userSelect.split(',');
+	let isPrivate;
+	if (req.body.isPrivate) {
+		isPrivate = true;
+	} else {
+		isPrivate = false
+	}
+	
+	const channelName = req.body.channelName ? req.body.channelName : `${req.user.name} ${userSelect[1]}`; 
+	const description = req.body.description;
+	const users = userSelect == null ? [creatorsId] : [userSelect[0], creatorsId];
+
 
 	Channel
 		.findOne({
-			channel_name: channelName
+			channel_name: channelName,
+			isPrivate: false
 		})
 		.exec((error, channel) => {
 			if (error) {
@@ -49,16 +77,17 @@ const createChannel = (req, res) => {
 			}
 
 			if (channel) {
-				console.log('name already exists');
+				console.log('Channel already exists');
 				// flash msg
 				return res.redirect('/channel')
 			}
 
 			newChannel = new Channel({
-				users: creatorsId,
-                admin: creatorsId,
-                channel_name: channelName,
-				isPrivate: false
+				users: users,
+				admin: creatorsId,
+				channel_name: channelName,
+				description: description,
+				isPrivate: isPrivate
 
 			}).save((error, channel) => {
 				if (error) {
@@ -69,7 +98,9 @@ const createChannel = (req, res) => {
 
 				User
 					.findByIdAndUpdate(creatorsId, {
-						$push: { channel_rooms: channelId }
+						$push: {
+							channel_rooms: channelId
+						}
 					})
 					.exec((error, user) => {
 						if (error) {

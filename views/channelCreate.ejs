@@ -1,6 +1,36 @@
 <%- include('components/header') %>
+<main class="form-signin mt-5">
+    <form action="/channels" method="POST">
+        <h1 class="h3 mb-3 fw-normal">Create new room</h1>
+        
+        <div class="form-check mb-3">
+            <label for="isPrivate" class="form-check-label">Private Chat?</label>
+            <input name="isPrivate" type="checkbox" id="isPrivateCheckbox" class="form-check-input">
+        </div>
 
-<form class="formTopTemplate" id="" action="/channels" method="post">
-    <input placeholder="Enter channel name" class="inputTemplate" name="channelNameInput" id="" type="text" autocomplete="off" required/>
-    <button type="submit" id="">Create Channel</button>
-</form>
+        <div class="mb-3" id="channelNameInputDiv">
+            <label for="channelName">Channel Name</label>
+            <input name="channelName" type="text" id="channelNameInput" class="form-control" placeholder="Channel Name"
+                required>
+        </div>
+
+        <div class="mb-3" id="descriptionTextAreaDiv">
+            <label for="description">Description</label>
+            <textarea name="description" id="descriptionTextArea" class="form-control" placeholder="Channel Description"
+                required></textarea>
+        </div>
+
+        <div class="mb-3" id="userSelectDiv">
+            <label for="userSelect">Invite User</label>
+            <select name="userSelect" id="userSelect" class="form-select" aria-label="Select user">
+                <option selected value="null"></option>
+                <% users.forEach(user => { %>
+                <option value="<%= user._id %>,<%= user.name %>"><%= user.name %></option>
+                <% }) %>
+            </select>
+        </div>
+
+        <button class="w-100 btn btn-lg btn-primary" type="submit">Create</button>
+    </form>
+</main>
+<script src="../public/scripts/createChannel.js"></script>
