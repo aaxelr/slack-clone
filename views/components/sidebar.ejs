@@ -2,30 +2,4 @@
     <li class="nav-item">
         <p class="nav-link">Online</p>
     </li>
-
-    <li class="nav-item">
-        <p class="nav-link">My chats</p>
-    </li>
-
-    <li>
-        <ul class="nav">
-            <% user.chat_rooms.forEach(chatRoom => { %>
-            <li class="nav-item">
-                <a 
-                class="nav-link" 
-                href="/chats/<%= chatRoom._id %>" 
-                tabindex="-1" 
-                aria-disabled="true"
-                >
-                    <%= chatRoom._id %>
-                </a>
-            </li>
-            <% }); %>
-        </ul>
-    </li>
-
-    <li class="nav-item">
-        <a class="btn btn-primary" href='/channels'>New</a>
-    </li>
-
 </ul>

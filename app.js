@@ -3,16 +3,12 @@ const app = express();
 const path = require('path');
 const mongoose = require('mongoose');
 const expressEjsLayout = require('express-ejs-layouts');
-const formatMessage = require('./utils/messages')
 const { userJoin, getCurrentUser } = require('./utils/users')
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
 require('./config/passport')(passport);
 const { ensureAuthenticated } = require('./config/auth.js');
-
-const port = 4000;
-
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
@@ -20,13 +16,11 @@ const io = require('socket.io')(http);
 const userRoutes = require('./routes/userRoutes');
 const channelRoutes = require('./routes/channelRoutes');
 const chatRoutes = require('./routes/chatRoutes');
-// const { compareSync } = require('bcrypt');
-// const { find } = require('./models/user');
-
+// Require models
 const ChannelPost = require('./models/channelPost')
 const Channel = require('./models/channel')
 
-
+const port = 4000;
 
 
 //////////////////// MIDDLEWARE ////////////////////
@@ -72,16 +66,6 @@ app.use((req, res, next) => {
 //////////////////// HANDLERS ////////////////////
 
 const renderLandingPage = (req, res) => {
-  /*   const User = require('./models/user');
-    User
-    .findOne({
-        _id: '60521bd7e26c1c29f7a9065e'
-      })
-    .populate('channel_rooms')
-    .exec((error, user) => {
-      console.log(user)
-    }) */
-
   res.render('welcome');
 }
 
@@ -89,30 +73,28 @@ const renderDashboard = (req, res) => {
   const User = require('./models/user');
   const Channel = require('./models/channel');
   Channel
-    .find({
-      users: {
-        $ne: req.user.id
-      }
+    .find({ 
+      users: req.user.id, 
+      isPrivate: true
     })
-    //.populate('chat_rooms')
-    .exec((error, otherChannels) => {
+    .exec((error, chats) => {
       if (error) {
         console.log(error);
         return handleError(error)
       }
       Channel
         .find({
-          users: req.user.id
+          isPrivate: false
         })
-        .exec((error, myChannels) => {
+        .exec((error, channels) => {
           if (error) {
             console.log(error);
             return handleError(error)
           }
           res.render('dashboard', {
             user: req.user,
-            myChannels: myChannels,
-            otherChannels: otherChannels
+            chats: chats,
+            channels: channels
           });
         })
     });
