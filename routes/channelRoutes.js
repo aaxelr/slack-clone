@@ -39,7 +39,6 @@ const renderChannel = (req, res) => {
 			if (error) {
 				return handleError(error)
 			}
-			console.log(channel)
 			res.render('channel', {
 				user: req.user,
 				channel_id: req.params.id,
@@ -94,7 +93,6 @@ const createChannel = (req, res) => {
 					console.log(error);
 				}
 				const channelId = channel._id;
-				console.log(channel);
 
 				User
 					.findByIdAndUpdate(creatorsId, {
@@ -116,8 +114,11 @@ const createChannel = (req, res) => {
 
 const deletePost = (req, res) => {
 	console.log(req.params.id)
+	// här ska vi ta bort post med postID från både channel och channelposts	
 	res.end()
 }
+
+// const editPost = (req, res) => {} ...
 
 router
 	.route('/')
@@ -130,5 +131,6 @@ router
 router
 	.route("/posts/:id")
 	.delete(deletePost)
+	//.patch(editPost)
 
 module.exports = router;

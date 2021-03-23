@@ -36,7 +36,8 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 // Mongoose
 mongoose.connect('mongodb://localhost:27017/slack_clone', {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: false
   })
   .then(() => console.log('connected...'))
   .catch(err => console.log(err));
@@ -128,21 +129,13 @@ io.on('connection', socket => {
     io.emit('update-online-users', onlineUsers)
   });
 
-  socket.on('join-room', ({
-    username,
-    channel_id
-  }) => {
-
+  socket.on('join-room', ({ username, channel_id }) => {
     const user = userJoin(socket.id, username, channel_id)
-
     socket.join(user.channel_id)
-
-  })
+  });
 
   // listen for chat messages
   socket.on('chat-message', (msg_info) => {
-
-    // spara till db
 
     const newChannelPost = new ChannelPost({
       author: msg_info.id,
@@ -162,25 +155,23 @@ io.on('connection', socket => {
           if (error) {
             console.log(error);
           }
-          console.log(channelPost)
-          io.to(user.channel_id).emit('post-id', post_id)
-        })
-        io.to(user.channel_id).emit('message', msg_info)
-
-    })
+          
+          io.to(user.channel_id).emit('message', {
+            msg_info,
+            post_id: channelPost._id})
+        });
+    });
 
     const user = getCurrentUser(socket.id)
-    console.log(user)
 
-  })
-  // this runs when a user disconnects
+  });
+
   socket.on('disconnect', () => {
     console.log("User disco'd")
     onlineUsers = onlineUsers.filter(user => {
-      console.log(user)
       return user.socketid !== socket.id
     });
-    console.log(onlineUsers);
+    
     io.emit('update-online-users', onlineUsers);
   });
 });

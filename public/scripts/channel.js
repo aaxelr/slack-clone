@@ -36,19 +36,23 @@ document.addEventListener('DOMContentLoaded', (e) => {
     function appendMessage(msg_info, post_id) {
         const item = document.createElement('li');
         const msg = document.createElement('p');
-        const user = document.createElement('h5')
-        const date = document.createElement('h6')
-        const edit_btn = document.createElement('a')
-        const delete_btn = document.createElement('a')
+        const user = document.createElement('h5');
+        const date = document.createElement('h6');
+        const edit_btn = document.createElement('button');
+        const delete_btn = document.createElement('button');
 
-        date.textContent = currDate
-        user.textContent = msg_info.user
-        msg.textContent = msg_info.msg
+        date.textContent = currDate;
+        user.textContent = msg_info.user;
+        msg.textContent = msg_info.msg;
 
-        edit_btn.textContent = "🖋"
-        edit_btn.href = `/channels/post/${post_id}`
-        delete_btn.textContent = "❌"
-        delete_btn.href = `/channels/post/${post_id}`
+        edit_btn.textContent = "🖋";
+        edit_btn.classList.add('edit_icon');
+        //edit_btn.addEventListener('click', e => {})
+        delete_btn.textContent = "❌";
+        delete_btn.classList.add('delete_icon');
+        delete_btn.addEventListener('click', e => {
+            deletePost(post_id, e.target);
+        });
         item.appendChild(user)
         item.appendChild(msg)
         item.appendChild(date)
@@ -62,25 +66,27 @@ document.addEventListener('DOMContentLoaded', (e) => {
 
     // Join chatroom
     socket.emit('join-room', { username, channel_id })
-
-    // message from server
-    socket.on('message', (msg_info) => {
-        socket.on('post-id', post_id => {
-            console.log(post_id)
-            appendMessage(msg_info, post_id)
-        })
-    })
-})
+    
+    socket.on('message', ({msg_info, post_id}) => {
+        console.log(post_id);
+        appendMessage(msg_info, post_id);
+    });
+});
 
 //////////////// CRUD ////////////////
 
+// const editPost ...
+
 const deletePost = (id, element) => {
+    console.log(element);
     fetch(`/channels/post/${id}`, {
         method: 'DELETE'
     })
     .then(res => {})
     .then(data => {
+        element.parentNode.remove()
         alert('Removed a message')
+        
     })
 }
 
