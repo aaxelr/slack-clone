@@ -1,5 +1,10 @@
-<ul class="h-100 nav flex-column bg-dark text-white">
+<ul class="h-100 nav flex-column bg-dark text-white" id="usersUl">
     <li class="nav-item">
         <p class="nav-link">Online</p>
     </li>
+    
 </ul>
+<input hidden value="<%= user.name %>" id="username" type="text">
+<input hidden value="<%= user._id %>" id="id" type="text">
+
+<script src="../../public/scripts/showOnlineUsers.js"></script>

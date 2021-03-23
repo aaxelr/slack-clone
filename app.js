@@ -3,12 +3,17 @@ const app = express();
 const path = require('path');
 const mongoose = require('mongoose');
 const expressEjsLayout = require('express-ejs-layouts');
-const { userJoin, getCurrentUser } = require('./utils/users')
+const {
+  userJoin,
+  getCurrentUser
+} = require('./utils/users')
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
 require('./config/passport')(passport);
-const { ensureAuthenticated } = require('./config/auth.js');
+const {
+  ensureAuthenticated
+} = require('./config/auth.js');
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
@@ -41,7 +46,9 @@ app.set('view engine', 'ejs');
 app.use(expressEjsLayout);
 
 // Body Parser
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({
+  extended: false
+}));
 
 // Express session
 app.use(session({
@@ -73,8 +80,8 @@ const renderDashboard = (req, res) => {
   const User = require('./models/user');
   const Channel = require('./models/channel');
   Channel
-    .find({ 
-      users: req.user.id, 
+    .find({
+      users: req.user.id,
       isPrivate: true
     })
     .exec((error, chats) => {
@@ -101,16 +108,32 @@ const renderDashboard = (req, res) => {
 }
 //////////////////// SOCKET ////////////////////
 
-// kan användas (tsm med disconnect längst ner) 
-// för att visa vilka som är online/offline
+let onlineUsers = [];
 
-// ändra username för att passa vår app...
 io.on('connection', socket => {
   console.log('User connected')
+  io.emit('update-online-users', onlineUsers);
 
-  socket.on('join-room', ({username, channel_id}) => {
+  socket.on('users-online', ({ username, id }) => {
+    const user = {
+      socketid: socket.id,
+      id,
+      username
+    };
+    
+    if (!onlineUsers.some(user => user.id === id)) {
+      onlineUsers.push(user);
+    }
 
-    const user = userJoin( socket.id, username, channel_id)
+    io.emit('update-online-users', onlineUsers)
+  });
+
+  socket.on('join-room', ({
+    username,
+    channel_id
+  }) => {
+
+    const user = userJoin(socket.id, username, channel_id)
 
     socket.join(user.channel_id)
 
@@ -123,21 +146,23 @@ io.on('connection', socket => {
 
     const newChannelPost = new ChannelPost({
       author: msg_info.id,
-      post: msg_info.msg   
+      post: msg_info.msg
     })
 
     newChannelPost.save((error, channelPost) => {
       if (error) {
         return handleError(error);
-			}     
+      }
       Channel.findByIdAndUpdate(msg_info.channel_id, {
-        $push: { posts: channelPost._id}
-      })
-      .exec((error, channel) => {
-        if (error) {
-          console.log(error);
-        }
-      })
+          $push: {
+            posts: channelPost._id
+          }
+        })
+        .exec((error, channel) => {
+          if (error) {
+            console.log(error);
+          }
+        })
     })
 
     const user = getCurrentUser(socket.id)
@@ -145,10 +170,14 @@ io.on('connection', socket => {
     io.to(user.channel_id).emit('message', msg_info)
 
   })
-    // this runs when a user disconnects
-    socket.on('disconnect', () => {
-    console.log('User connected')
-    
+  // this runs when a user disconnects
+  socket.on('disconnect', () => {
+    console.log("User disco'd")
+    onlineUsers = onlineUsers.filter(user => {
+      return user.socketid !== socket.id
+    });
+    console.log(onlineUsers);
+    io.emit('update-online-user', onlineUsers);
   });
 });
 
