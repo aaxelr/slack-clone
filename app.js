@@ -174,10 +174,11 @@ io.on('connection', socket => {
   socket.on('disconnect', () => {
     console.log("User disco'd")
     onlineUsers = onlineUsers.filter(user => {
+      console.log(user)
       return user.socketid !== socket.id
     });
     console.log(onlineUsers);
-    io.emit('update-online-user', onlineUsers);
+    io.emit('update-online-users', onlineUsers);
   });
 });
 

@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   socket.on('update-online-users', onlineUsers => {
+    console.log(onlineUsers)
     ul.innerHTML = '';
     if (onlineUsers.length !== 0) {
       onlineUsers.forEach(user => {
@@ -18,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const p = document.createElement('p')
         li.classList.add('nav-item');
         p.classList.add('nav-link');
-        p.innerText = user.username;
+        p.innerText = "🔸 " + user.username;
         li.append(p);
         ul.append(li);
       });
