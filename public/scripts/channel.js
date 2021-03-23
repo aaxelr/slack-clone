@@ -12,9 +12,9 @@ document.addEventListener('DOMContentLoaded', (e) => {
     minutes = minutes > 9 ? minutes : '0' + minutes;    
     const currDate = `${fullYear}-${month}-${datum} ${hours}:${minutes}`
 
-    const username = document.getElementById('username').value
-    const user_id = document.getElementById('id').value
-    const channel_id = document.getElementById('channel_id').value
+    const username = document.getElementById('username_channel').value
+    const user_id = document.getElementById('id_channel').value
+    const channel_id = document.getElementById('channel_id_channel').value
 
     form.addEventListener('submit', (e) => {
         
@@ -33,13 +33,13 @@ document.addEventListener('DOMContentLoaded', (e) => {
         }
     });
 
-
-
     function appendMessage(msg_info) {
         const item = document.createElement('li');
         const msg = document.createElement('p');
         const user = document.createElement('h5')
         const date = document.createElement('h6')
+        const edit_btn = document.createElement('a')
+        const delete_btn = document.createElement('a')
 
         date.textContent = currDate
         user.textContent = msg_info.user
@@ -62,46 +62,15 @@ document.addEventListener('DOMContentLoaded', (e) => {
     })
 })
 
+//////////////// CRUD ////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /* socket.emit('new-user', username) */
-
-    /* socket.on('chat-message', function(msg_info) {
-        appendMessage(msg_info)
+const deletePost = (id, element) => {
+    fetch(`/channels/post/${id}`, {
+        method: 'DELETE'
     })
-    socket.on('user-connected', function(username) {
-        const user_connected_data = {
-            msg: 'connected',
-            user: username,
-            date: new Date()
-        }
-        appendMessage(user_connected_data)
+    .then(res => {})
+    .then(data => {
+        alert('Removed a message')
     })
+}
 
-    form.addEventListener('submit', function(e) {
-        e.preventDefault()
-        const msg_info = {
-            msg: input.value,
-            user: username,
-            id: user_id,
-            channel_id: channel_id
-        }
-        appendMessage(msg_info)
-        console.log(channel_id)
-        if (input.value) {
-            socket.emit('send-chat-message', msg_info);
-            input.value = ''
-        }
-    }) */

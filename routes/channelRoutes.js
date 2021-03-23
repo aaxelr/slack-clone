@@ -3,7 +3,7 @@ const app = express()
 const router = express.Router()
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-
+const ChannelPost = require("../models/channelPost")
 
 const renderCreateChannel = (req, res) => {
 	const User = require('../models/user')
@@ -114,6 +114,11 @@ const createChannel = (req, res) => {
 		});
 }
 
+const deletePost = (req, res) => {
+	console.log(req.params.id)
+	res.end()
+}
+
 router
 	.route('/')
 	.get(renderCreateChannel)
@@ -122,6 +127,8 @@ router
 router
 	.route('/:id')
 	.get(renderChannel);
-
+router
+	.route("/post/:id")
+	.delete(deletePost)
 
 module.exports = router;
