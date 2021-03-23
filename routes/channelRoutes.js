@@ -128,7 +128,7 @@ router
 	.route('/:id')
 	.get(renderChannel);
 router
-	.route("/post/:id")
+	.route("/posts/:id")
 	.delete(deletePost)
 
 module.exports = router;

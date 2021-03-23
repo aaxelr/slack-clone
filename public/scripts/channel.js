@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', (e) => {
         }
     });
 
-    function appendMessage(msg_info) {
+    function appendMessage(msg_info, post_id) {
         const item = document.createElement('li');
         const msg = document.createElement('p');
         const user = document.createElement('h5')
@@ -44,9 +44,16 @@ document.addEventListener('DOMContentLoaded', (e) => {
         date.textContent = currDate
         user.textContent = msg_info.user
         msg.textContent = msg_info.msg
+
+        edit_btn.textContent = "🖋"
+        edit_btn.href = `/channels/post/${post_id}`
+        delete_btn.textContent = "❌"
+        delete_btn.href = `/channels/post/${post_id}`
         item.appendChild(user)
         item.appendChild(msg)
         item.appendChild(date)
+        item.appendChild(delete_btn)
+        item.appendChild(edit_btn)
         messages.appendChild(item)
         window.scrollTo(0, document.body.scrollHeight)
     }
@@ -57,8 +64,11 @@ document.addEventListener('DOMContentLoaded', (e) => {
     socket.emit('join-room', { username, channel_id })
 
     // message from server
-    socket.on('message', msg_info => {
-        appendMessage(msg_info)
+    socket.on('message', (msg_info) => {
+        socket.on('post-id', post_id => {
+            console.log(post_id)
+            appendMessage(msg_info, post_id)
+        })
     })
 })
 

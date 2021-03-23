@@ -162,12 +162,15 @@ io.on('connection', socket => {
           if (error) {
             console.log(error);
           }
+          console.log(channelPost)
+          io.to(user.channel_id).emit('post-id', post_id)
         })
+        io.to(user.channel_id).emit('message', msg_info)
+
     })
 
     const user = getCurrentUser(socket.id)
     console.log(user)
-    io.to(user.channel_id).emit('message', msg_info)
 
   })
   // this runs when a user disconnects

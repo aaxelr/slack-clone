@@ -21,8 +21,8 @@
                         %>
                         <h6><%= currDate %></h6>
                         <% if (post.author._id.toString() == user._id.toString()) { %>
-                            <a href="/channels/post/<%= post._id %>">❌</a>
-                            <a href="/channels/post/<%= post._id %>">🖋</a>
+                            <a href="/channels/posts/<%= post._id %>">❌</a>
+                            <a href="/channels/posts/<%= post._id %>">🖋</a>
                         <% } %>
                     </li>
                 <% }) %>
