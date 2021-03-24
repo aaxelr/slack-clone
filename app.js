@@ -20,7 +20,6 @@ const io = require('socket.io')(http);
 // Require routes
 const userRoutes = require('./routes/userRoutes');
 const channelRoutes = require('./routes/channelRoutes');
-const chatRoutes = require('./routes/chatRoutes');
 // Require models
 const ChannelPost = require('./models/channelPost')
 const Channel = require('./models/channel')
@@ -195,19 +194,12 @@ app
 // USERROUTES
 app.use('/users', userRoutes);
 
-
 // CHANNELROUTES
 app.use('/channels', channelRoutes);
 
 
-// CHATROUTES
-app.use('/chats', chatRoutes);
+//////////////////// SERVER ////////////////////
 
-
-//////////////////// SERVER //////////////////// bryt ut till server.js?
 http.listen(port, () => {
   console.log(`listening on port ${port}...`);
 });
-
-
-/* module.exports = app; */
