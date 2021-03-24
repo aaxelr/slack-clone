@@ -123,7 +123,7 @@ const deletePost = (req, res) => {
 				console.log(error);
 			}
 			Channel
-				.update({
+				.updateOne({
 					posts: postId
 				}, {
 					$pull: {
@@ -142,7 +142,19 @@ const deletePost = (req, res) => {
 	// här ska vi ta bort post med postID från både channel och channelposts	
 }
 
-// const editPost = (req, res) => {} ...
+const updatePost = (req, res) => {
+	const postId = req.params.id
+	ChannelPost
+		.findByIdAndUpdate(postId, {
+			post: req.body.msg
+		})
+		.exec((error, post) => {
+			if (error) {
+				console.log(error);
+			}
+			res.end()
+		});
+}
 
 router
 	.route('/')
@@ -155,6 +167,6 @@ router
 router
 	.route("/posts/:id")
 	.delete(deletePost)
-//.patch(editPost)
+	.patch(updatePost)
 
 module.exports = router;

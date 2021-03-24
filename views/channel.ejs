@@ -9,7 +9,7 @@
                 <% posts.forEach(post => { %>
                     <li>
                         <h5><%= post.author.name %></h5>
-                        <p> <%= post.post %></p>
+                        <p id="<%= post._id %>"> <%= post.post %></p>
                         <%  const d = post.time_stamp;
                             const datum = d.getDate()
                             const month = d.getMonth()+1
@@ -22,7 +22,24 @@
                         <h6><%= currDate %></h6>
                         <% if (post.author._id.toString() == user._id.toString()) { %>
                             <button data-id="<%= post._id %>"  class="delete_icon">❌</button>
-                            <button data-id="<%= post._id %>" class="edit_icon">🖋</button>
+                            <button data-bs-toggle="modal" data-bs-target="#editPostModal<%= post._id %>" data-id="<%= post._id %>" class="edit_icon">🖋</button>
+                            <div class="modal fade" id="editPostModal<%= post._id %>" tabindex="-1" aria-labelledby="editPostModal<%= post._id %>Label" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editPostModal<%= post._id %>Label">Edit your post</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input value="<%= post.post %>" type="text">
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button data-bs-dismiss="modal" data-id="<%= post._id %>" type="button" class="btn btn-primary updatePost">Save changes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         <% } %>
                     </li>
                 <% }) %>
