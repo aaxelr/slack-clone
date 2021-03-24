@@ -1,12 +1,13 @@
 const express = require('express')
 const app = express()
-const router = express.Router()
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
-const ChannelPost = require("../models/channelPost")
+const router = express.Router();
+
+const ChannelPost = require("../models/channelPost");
+const Channel = require("../models/channel");
+const User = require('../models/user');
 
 const renderCreateChannel = (req, res) => {
-	const User = require('../models/user')
+	//	const User = require('../models/user')
 
 	User
 		.find()
@@ -23,8 +24,8 @@ const renderCreateChannel = (req, res) => {
 
 const renderChannel = (req, res) => {
 
-	const ChannelPost = require('../models/channelPost')
-	const Channel = require('../models/channel')
+	/* const ChannelPost = require('../models/channelPost')
+	const Channel = require('../models/channel') */
 
 	Channel
 		.findById(req.params.id)
@@ -49,8 +50,8 @@ const renderChannel = (req, res) => {
 }
 
 const createChannel = (req, res) => {
-	const Channel = require('../models/channel');
-	const User = require('../models/user');
+	//const Channel = require('../models/channel');
+	//const User = require('../models/user');
 	const creatorsId = req.user._id;
 	const userSelect = req.body.userSelect.split(',');
 	let isPrivate;
@@ -59,8 +60,8 @@ const createChannel = (req, res) => {
 	} else {
 		isPrivate = false
 	}
-	
-	const channelName = req.body.channelName ? req.body.channelName : `${req.user.name} ${userSelect[1]}`; 
+
+	const channelName = req.body.channelName ? req.body.channelName : `${req.user.name} ${userSelect[1]}`;
 	const description = req.body.description;
 	const users = userSelect == 'null' ? [creatorsId] : [userSelect[0], creatorsId];
 
@@ -113,9 +114,32 @@ const createChannel = (req, res) => {
 }
 
 const deletePost = (req, res) => {
-	console.log(req.params.id)
+	const postId = req.params.id;
+
+	ChannelPost
+		.findByIdAndDelete(postId)
+		.exec((error, post) => {
+			if (error) {
+				console.log(error);
+			}
+			Channel
+				.update({
+					posts: postId
+				}, {
+					$pull: {
+						posts: postId
+					}
+				})
+				.exec((error, post) => {
+					if (error) {
+						console.log(error);
+					}
+					//DONE!
+					console.log('post deleted :)');
+				})
+			res.end()
+		});
 	// här ska vi ta bort post med postID från både channel och channelposts	
-	res.end()
 }
 
 // const editPost = (req, res) => {} ...
@@ -131,6 +155,6 @@ router
 router
 	.route("/posts/:id")
 	.delete(deletePost)
-	//.patch(editPost)
+//.patch(editPost)
 
 module.exports = router;

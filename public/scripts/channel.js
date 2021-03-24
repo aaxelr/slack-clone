@@ -1,7 +1,8 @@
-document.addEventListener('DOMContentLoaded', (e) => {
-    const form = document.getElementById('channelForm')
-    const input = document.getElementById('channelInput')
-    const messages = document.getElementById('channelMessages')
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('channelForm');
+    const input = document.getElementById('channelInput');
+    const messages = document.getElementById('channelMessages');
+    const dbDeleteBtns = document.querySelectorAll('.delete_icon');
 
     const d = new Date();
     const datum = d.getDate()
@@ -15,6 +16,12 @@ document.addEventListener('DOMContentLoaded', (e) => {
     const username = document.getElementById('username_channel').value
     const user_id = document.getElementById('id_channel').value
     const channel_id = document.getElementById('channel_id_channel').value
+
+    dbDeleteBtns.forEach(btn => {
+        btn.addEventListener('click', e => {
+            deletePost(btn.dataset.id, e.target);
+        });
+    });
 
     form.addEventListener('submit', (e) => {
         
@@ -78,8 +85,7 @@ document.addEventListener('DOMContentLoaded', (e) => {
 // const editPost ...
 
 const deletePost = (id, element) => {
-    console.log(element);
-    fetch(`/channels/post/${id}`, {
+    fetch(`/channels/posts/${id}`, {
         method: 'DELETE'
     })
     .then(res => {})

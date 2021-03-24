@@ -21,8 +21,8 @@
                         %>
                         <h6><%= currDate %></h6>
                         <% if (post.author._id.toString() == user._id.toString()) { %>
-                            <button class="delete_icon">❌</button>
-                            <button class="edit_icon">🖋</button>
+                            <button data-id="<%= post._id %>"  class="delete_icon">❌</button>
+                            <button data-id="<%= post._id %>" class="edit_icon">🖋</button>
                         <% } %>
                     </li>
                 <% }) %>
