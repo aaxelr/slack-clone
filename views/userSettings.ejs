@@ -14,7 +14,7 @@
         <h3><%= user.name %></h3>
         <h4><%= user.email %></h4>
 
-        <form action="/users/settings/picture" method="post" enctype="multipart/form-data">
+        <form action="/users/settings/picture" method="POST" enctype="multipart/form-data">
             <input type="file" name="picture" /><br />
             <input type="submit" value="Save" class="btn btn-secondary" />
         </form>

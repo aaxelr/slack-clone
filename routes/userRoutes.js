@@ -6,6 +6,7 @@ const router = express.Router();
 const userController = require('./../controllers/userController');
 const multer = require('multer');
 const path = require('path');
+const { profile } = require('console');
 const uploadPath = 'public/uploads/';
 const storage = multer.diskStorage({
 
@@ -78,11 +79,13 @@ router
 
     try {
       const profile_pic = uploadPath + req.file.filename;
-
+      console.log(req.file); // TEST
+      console.log(req.file.filename); // TEST
+      console.log(profile_pic.length); // TEST
+      console.log(typeof profile_pic); // TEST
       if (profile_pic === uploadPath || !profile_pic) {
         res.end('<h1>File not uploaded</h1>');
       } else {
-        //db thangs?
         const id = req.user._id;
         const User = require('../models/user');
 
@@ -95,17 +98,11 @@ router
               return handleError(error);
             }
             res.render('userSettings', { user: user, profile_pic: profile_pic });
-          })
+          });
       }
-
     } catch (error) {
       res.end(error)
     }
-
-  })
-  .get((req, res) => {
-    // res.render('image') ???
   });
-
 
 module.exports = router;
