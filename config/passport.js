@@ -7,18 +7,15 @@ module.exports = function (passport) {
 		new LocalStrategy({
 			usernameField: 'email'
 		}, (email, password, done) => {
-			//match user
 
-			User.findOne({
-					email: email
-				})
-				.then((user) => {
+			User.findOne({ email })
+				.then(user => {
 					if (!user) {
 						return done(null, false, {
 							message: 'that email is not registered'
 						});
 					}
-					// match pass
+					
 					bcrypt.compare(password, user.password, (err, isMatch) => {
 						if (err) throw err;
 
