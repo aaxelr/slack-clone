@@ -1,14 +1,11 @@
-const express = require('express')
-const app = express()
+const express = require('express');
 const router = express.Router();
 
-const ChannelPost = require("../models/channelPost");
-const Channel = require("../models/channel");
+const ChannelPost = require('../models/channelPost');
+const Channel = require('../models/channel');
 const User = require('../models/user');
 
 const renderCreateChannel = (req, res) => {
-	//	const User = require('../models/user')
-
 	User
 		.find()
 		.exec((error, users) => {
@@ -16,17 +13,11 @@ const renderCreateChannel = (req, res) => {
 				return handleError(error);
 			}
 			console.log(users);
-			res.render('channelCreate', {
-				users
-			});
+			res.render('channelCreate', { users });
 		});
 }
 
 const renderChannel = (req, res) => {
-
-	/* const ChannelPost = require('../models/channelPost')
-	const Channel = require('../models/channel') */
-
 	Channel
 		.findById(req.params.id)
 		.populate({
@@ -35,36 +26,31 @@ const renderChannel = (req, res) => {
 				path: 'author'
 			}
 		})
-
 		.exec((error, channel) => {
 			if (error) {
-				return handleError(error)
+				return handleError(error);
 			}
 			res.render('channel', {
 				user: req.user,
 				channel_id: req.params.id,
 				posts: channel.posts
-			})
-		})
-
+			});
+		});
 }
 
 const createChannel = (req, res) => {
-	//const Channel = require('../models/channel');
-	//const User = require('../models/user');
 	const creatorsId = req.user._id;
 	const userSelect = req.body.userSelect.split(',');
 	let isPrivate;
 	if (req.body.isPrivate) {
 		isPrivate = true;
 	} else {
-		isPrivate = false
+		isPrivate = false;
 	}
 
 	const channelName = req.body.channelName ? req.body.channelName : `${req.user.name} ${userSelect[1]}`;
 	const description = req.body.description;
 	const users = userSelect == 'null' ? [creatorsId] : [userSelect[0], creatorsId];
-
 
 	Channel
 		.findOne({
@@ -78,21 +64,20 @@ const createChannel = (req, res) => {
 
 			if (channel) {
 				console.log('Channel already exists');
-				// flash msg
-				return res.redirect('/channel')
+				return res.redirect('/channel');
 			}
 
 			newChannel = new Channel({
-				users: users,
+				users,
 				admin: creatorsId,
 				channel_name: channelName,
-				description: description,
-				isPrivate: isPrivate
-
+				description,
+				isPrivate
 			}).save((error, channel) => {
 				if (error) {
-					console.log(error);
+					return console.log(error);
 				}
+
 				const channelId = channel._id;
 
 				User
@@ -103,11 +88,9 @@ const createChannel = (req, res) => {
 					})
 					.exec((error, user) => {
 						if (error) {
-							console.log(error);
+							return console.log(error);
 						}
-						console.log(user);
 						res.redirect(`/channels/${channelId}`);
-						// Send message that new room was created
 					});
 			});
 		});
@@ -120,8 +103,9 @@ const deletePost = (req, res) => {
 		.findByIdAndDelete(postId)
 		.exec((error, post) => {
 			if (error) {
-				console.log(error);
+				return console.log(error);
 			}
+
 			Channel
 				.updateOne({
 					posts: postId
@@ -132,26 +116,25 @@ const deletePost = (req, res) => {
 				})
 				.exec((error, post) => {
 					if (error) {
-						console.log(error);
+						return console.log(error);
 					}
-					//DONE!
-					console.log('post deleted :)');
-				})
-			res.end()
+				});
+			res.end();
 		});
-	// här ska vi ta bort post med postID från både channel och channelposts	
 }
 
 const updatePost = (req, res) => {
 	const postId = req.params.id
+
 	ChannelPost
 		.findByIdAndUpdate(postId, {
 			post: req.body.msg
 		})
 		.exec((error, post) => {
 			if (error) {
-				console.log(error);
+				return console.log(error);
 			}
+
 			res.end()
 		});
 }
@@ -164,9 +147,10 @@ router
 router
 	.route('/:id')
 	.get(renderChannel);
+
 router
-	.route("/posts/:id")
+	.route('/posts/:id')
 	.delete(deletePost)
-	.patch(updatePost)
+	.patch(updatePost);
 
 module.exports = router;

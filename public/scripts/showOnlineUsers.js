@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+  
   const username = document.getElementById('username');
   const id = document.getElementById('id');
   const ul = document.getElementById('usersUl');
