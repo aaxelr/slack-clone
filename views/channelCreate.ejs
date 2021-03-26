@@ -22,10 +22,13 @@
 
         <div class="mb-3" id="userSelectDiv">
             <label for="userSelect">Invite User</label>
-            <select name="userSelect" id="userSelect" class="form-select" aria-label="Select user">
-                <option selected value="null"></option>
+            <select name="userSelect" id="userSelect" class="form-select" aria-label="Select user" disabled>
                 <% users.forEach(user => { %>
-                <option value="<%= user._id %>,<%= user.name %>"><%= user.name %></option>
+                    <% if (user._id.toString() !== currentUser._id.toString()) { %>
+                        <option value="<%= user._id %>,<%= user.name %>">
+                            <%= user.name %>
+                        </option>
+                    <% } %>
                 <% }) %>
             </select>
         </div>

@@ -3,8 +3,9 @@
         <p class="alert alert-danger">
             <%= error.msg %>
         </p>
-        <% }) %>
+    <% }) %>
 <% } %>
+
 <% if(success_msg != ''){ %>
     <p class="alert alert-success">
         <%= success_msg %></p>
@@ -14,9 +15,10 @@
     <p class="alert alert-danger">
         <%= error_msg %>
     </p>
-    <% } %> 
-    <% if(error != ''){ %>
-        <p class="alert alert-danger">
-            <%= error %>
-        </p>
-        <% } %> 
+<% } %> 
+
+<% if(error != ''){ %>
+    <p class="alert alert-danger">
+        <%= error %>
+    </p>
+<% } %> 

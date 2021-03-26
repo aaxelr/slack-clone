@@ -56,9 +56,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const msg = document.createElement('p');
     const user = document.createElement('h5');
     const date_elem = document.createElement('h6');
-    const edit_btn = document.createElement('button');
-    const delete_btn = document.createElement('button');
-    const modal = `
+    
+    date_elem.textContent = currDate;
+    user.textContent = msg_info.user;
+    msg.textContent = msg_info.msg;
+    msg.setAttribute('id', post_id);
+    item.appendChild(user);
+    item.appendChild(msg);
+    item.appendChild(date_elem);
+
+    if (msg_info.id === user_id) {
+      const edit_btn = document.createElement('button');
+      const delete_btn = document.createElement('button');
+      const modal = `
       <div class="modal fade" id="editPostModal${post_id}" tabindex="-1" aria-labelledby="editPostModal${post_id}Label" aria-hidden="true">
           <div class="modal-dialog">
               <div class="modal-content">
@@ -76,36 +86,32 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
           </div>
       </div>`;
-    
-    date_elem.textContent = currDate;
-    user.textContent = msg_info.user;
-    msg.textContent = msg_info.msg;
-    msg.setAttribute('id', post_id);
 
-    edit_btn.textContent = "🖋";
-    edit_btn.classList.add('edit_icon');
-    edit_btn.setAttribute('data-bs-toggle', 'modal');
-    edit_btn.setAttribute('data-bs-target', `#editPostModal${post_id}`);
-    edit_btn.setAttribute('data-id', post_id);
+      edit_btn.textContent = "🖋";
+      edit_btn.classList.add('edit_icon');
+      edit_btn.setAttribute('data-bs-toggle', 'modal');
+      edit_btn.setAttribute('data-bs-target', `#editPostModal${post_id}`);
+      edit_btn.setAttribute('data-id', post_id);
 
-    delete_btn.textContent = "❌";
-    delete_btn.classList.add('delete_icon');
-    delete_btn.addEventListener('click', e => {
-      deletePost(post_id, e.target);
-    });
+      delete_btn.textContent = "❌";
+      delete_btn.classList.add('delete_icon');
+      delete_btn.addEventListener('click', e => {
+        deletePost(post_id, e.target);
+      });
 
-    item.appendChild(user);
-    item.appendChild(msg);
-    item.appendChild(date_elem);
-    item.appendChild(delete_btn);
-    item.appendChild(edit_btn);
-    item.insertAdjacentHTML('beforeend', modal);
+      item.appendChild(delete_btn);
+      item.appendChild(edit_btn);
+      
+      item.insertAdjacentHTML('beforeend', modal);
+      messages.appendChild(item);
+      const saveBtn = document.querySelector(`[data-post-id="${post_id}"]`);
+      saveBtn.addEventListener('click', e => {
+        const new_msg = e.target.parentNode.previousElementSibling.firstElementChild.value;
+        editPost(new_msg, post_id);
+      });
+    }
+
     messages.appendChild(item);
-    const saveBtn = document.querySelector(`[data-post-id="${post_id}"]`);
-    saveBtn.addEventListener('click', e => {
-      const new_msg = e.target.parentNode.previousElementSibling.firstElementChild.value;
-      editPost(new_msg, post_id);
-    });
     window.scrollTo(0, document.body.scrollHeight);
   }
 

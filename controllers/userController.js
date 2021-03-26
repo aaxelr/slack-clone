@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const passport = require('passport');
 const multer = require('multer');
 const path = require('path');
-const uploadPath = "public/uploads/";
+const uploadPath = 'public/uploads/';
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
     callback(null, uploadPath);
@@ -78,8 +78,11 @@ exports.registerUser = (req, res) => {
       .findOne({
         email: email
       })
-      .exec((err, user) => {
-        if (err) console.log(err);
+      .exec((error, user) => {
+        if (error) {
+          return console.log(error);
+        }
+        
         if (user) {
           errors.push({
             msg: 'email already exists!'
@@ -142,7 +145,7 @@ exports.uploadPicture = (req, res) => {
       })
       .exec((error, user) => {
         if (error) {
-          return handleError(error);
+          return console.log(error);
         }
         res.render('userSettings', {
           user: user,

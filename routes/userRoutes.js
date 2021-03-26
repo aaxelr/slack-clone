@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const flash = require('connect-flash');
 const router = express.Router();
+const { ensureAuthenticated } = require('./../config/auth.js');
 const userController = require('./../controllers/userController');
 
 // Middleware
@@ -40,7 +41,7 @@ router
 // Settings
 router
   .route('/settings')
-  .get(userController.userSettings);
+  .get(ensureAuthenticated, userController.userSettings);
 
 // Settings/Picture
 router

@@ -3,26 +3,20 @@ const app = express();
 const path = require('path');
 const mongoose = require('mongoose');
 const expressEjsLayout = require('express-ejs-layouts');
-const {
-  userJoin,
-  getCurrentUser
-} = require('./utils/users')
+const { userJoin, getCurrentUser } = require('./utils/users')
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
 require('./config/passport')(passport);
-const {
-  ensureAuthenticated
-} = require('./config/auth.js');
+const { ensureAuthenticated } = require('./config/auth.js');
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
-// Require routes
 const userRoutes = require('./routes/userRoutes');
 const channelRoutes = require('./routes/channelRoutes');
-// Require models
-const ChannelPost = require('./models/channelPost')
-const Channel = require('./models/channel')
+
+const ChannelPost = require('./models/channelPost');
+const Channel = require('./models/channel');
 
 const port = 4000;
 
@@ -49,7 +43,7 @@ app.use(expressEjsLayout);
 app.use(express.urlencoded({
   extended: false
 }));
-app.use(express.json())
+app.use(express.json());
 
 // Express session
 app.use(session({
@@ -65,8 +59,8 @@ app.use(passport.session());
 // Flash
 app.use(flash());
 app.use((req, res, next) => {
-  res.locals.success_msg = req.flash('success_msg')
-  res.locals.error_msg = req.flash('error_msg')
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
   res.locals.error = req.flash('error');
   next();
 });
@@ -78,8 +72,7 @@ const renderLandingPage = (req, res) => {
 }
 
 const renderDashboard = (req, res) => {
-  const User = require('./models/user');
-  const Channel = require('./models/channel');
+  
   Channel
     .find({
       users: req.user.id,
@@ -104,9 +97,10 @@ const renderDashboard = (req, res) => {
             chats: chats,
             channels: channels
           });
-        })
+        });
     });
 }
+
 //////////////////// SOCKET ////////////////////
 
 let onlineUsers = [];
@@ -178,12 +172,10 @@ io.on('connection', socket => {
 
 //////////////////// ROUTES ////////////////////
 
-// Landing page
 app
   .route('/')
   .get(renderLandingPage);
 
-// Dashboard (bryt)
 app
   .route('/dashboard')
   .get(ensureAuthenticated, renderDashboard);
@@ -191,12 +183,16 @@ app
 
 //////////////////// MOUNTS ////////////////////
 
-// USERROUTES
 app.use('/users', userRoutes);
 
-// CHANNELROUTES
-app.use('/channels', channelRoutes);
+app.use('/channels', ensureAuthenticated, channelRoutes);
 
+
+//////////////////// 404 ////////////////////
+
+app.get('*', (req, res) => {
+  res.status(404).redirect('/dashboard');
+});
 
 //////////////////// SERVER ////////////////////
 

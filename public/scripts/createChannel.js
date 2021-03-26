@@ -13,10 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
     inputs.forEach(input => {
       input.parentNode.classList.toggle('hidden');
       input.toggleAttribute('required');
+      input.toggleAttribute('disabled');
       
       if (input.parentNode.classList.contains('hidden')) {
         input.value = null;        
       }
     });
   });
+
 });
